@@ -1,15 +1,22 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./globals.css";
+import { AuthContextProvider } from "@/contexts/AuthContext";
+import AppHeader from "./AppHeader";
 
 export const metadata = {
-  title: "Dev Doc RAG Chatbot",
-  description: "공식 문서 기반 개발자 학습 챗봇",
+  title: "청년 정책 챗봇",
+  description: "청년 정책 추천 RAG 챗봇",
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="ko">
-      <body>{children}</body>
+      <body>
+        <AuthContextProvider>
+          <AppHeader />
+          {children}
+        </AuthContextProvider>
+      </body>
     </html>
   );
 }
