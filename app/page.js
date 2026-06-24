@@ -13,19 +13,21 @@ const MOCK_CONVERSATIONS = [
     { id: "4", title: "국가장학금 신청", group: "lastWeek" },
 ];
 
-const INITIAL_MESSAGE = { role: "bot", content: "안녕하세요! 청년정책 지원 챗봇입니다. 주거·취업·교육·복지 분야 정책에 대해 질문해보세요." };
-
 function Home() {
     // 상태 정의
-    const [messages, setMessages] = useState([INITIAL_MESSAGE]);
+    const [messages, setMessages] = useState([]);
     const [input, setInput] = useState("");
     const [loading, setLoading] = useState(false);
     const [conversationId, setConversationId] = useState(() => crypto.randomUUID());
     const [activeId, setActiveId] = useState(null);
 
     // 이벤트 처리 함수 정의
+    const handleSelectQuestion = (question) => {
+        setInput(question);
+    };
+
     const handleNewChat = () => {
-        setMessages([INITIAL_MESSAGE]);
+        setMessages([]);
         setConversationId(null);
         setActiveId(null);
         setInput("");
@@ -46,7 +48,13 @@ function Home() {
         try {
             const response = await chatApi.sendChat(text, conversationId);
             setConversationId(response.data.conversation_id);
-            setMessages(prev => [...prev, { role: "bot", content: response.data.message }]);
+            setMessages(prev => [...prev, {
+                role: "bot",
+                content: response.data.message,
+                category: response.data.category ?? [],
+                inquiry_type: response.data.inquiry_type ?? "",
+                policies: response.data.policies ?? [],
+            }]);
         } catch (err) {
             console.log(err);
             setMessages(prev => [...prev, { role: "bot", content: "서버 연결에 실패했습니다. 백엔드를 확인해주세요." }]);
@@ -78,6 +86,7 @@ function Home() {
                     onSend={handleSend}
                     onInputChange={e => setInput(e.target.value)}
                     onKeyDown={handleKeyDown}
+                    onSelectQuestion={handleSelectQuestion}
                 />
             </div>
         </div>

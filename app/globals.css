@@ -473,6 +473,132 @@ body {
 
 
 /* ============================================================
+   EmptyState
+   ============================================================ */
+.empty-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 60px;
+  gap: 32px;
+}
+
+.empty-state-hero {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.empty-state-logo {
+  font-size: 40px;
+  margin-bottom: 4px;
+}
+
+.empty-state-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.empty-state-desc {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.empty-state-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  width: 100%;
+  max-width: 640px;
+}
+
+.empty-state-card {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.empty-state-card-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.empty-state-card-list {
+  list-style: none;
+  padding: 8px 0;
+}
+
+.empty-state-question-btn {
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 8px 16px;
+  font-size: 13px;
+  color: var(--text);
+  cursor: pointer;
+  line-height: 1.5;
+  transition: background-color 0.15s;
+}
+
+.empty-state-question-btn:hover {
+  background-color: var(--surface-sub);
+}
+
+/* ============================================================
+   BotMessage Markdown
+   ============================================================ */
+.message-bubble.bot h1,
+.message-bubble.bot h2,
+.message-bubble.bot h3 {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 12px 0 4px;
+}
+
+.message-bubble.bot h1:first-child,
+.message-bubble.bot h2:first-child,
+.message-bubble.bot h3:first-child {
+  margin-top: 0;
+}
+
+.message-bubble.bot ul,
+.message-bubble.bot ol {
+  padding-left: 18px;
+  margin: 4px 0;
+}
+
+.message-bubble.bot li {
+  margin: 2px 0;
+}
+
+.message-bubble.bot strong {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.message-bubble.bot a {
+  color: var(--primary);
+  text-decoration: underline;
+  word-break: break-all;
+}
+
+.message-bubble.bot p {
+  margin: 4px 0;
+}
+
+/* ============================================================
    TypingIndicator
    ============================================================ */
 .typing-dot {
