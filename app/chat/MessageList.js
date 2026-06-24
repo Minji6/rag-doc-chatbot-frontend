@@ -5,8 +5,10 @@ import UserMessage from "@/app/chat/UserMessage";
 import BotMessage from "@/app/chat/BotMessage";
 
 function MessageList({ messages = [], loading }) {
+    // DOM 참조 - 자동 스크롤용
     const messagesEndRef = useRef(null);
 
+    // 새 메시지 올 때 자동 스크롤
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages, loading]);

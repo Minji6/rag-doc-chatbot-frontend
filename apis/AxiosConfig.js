@@ -1,7 +1,11 @@
-import axios from "axios"
+"use client"
 
-const axiosInstance = axios.create({
-  baseURL: "http://localhost:80",
-})
+import axios from "axios";
 
-export default axiosInstance
+axios.defaults.baseURL = "http://localhost:80";
+
+function AxiosConfig() {
+    return null;
+}
+
+export default AxiosConfig;
