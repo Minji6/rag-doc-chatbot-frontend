@@ -1,6 +1,8 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./globals.css";
 import AxiosConfig from "@/apis/AxiosConfig";
+import { AuthContextProvider } from "@/contexts/AuthContext";
+import AppHeader from "./AppHeader";
 
 export const metadata = {
   title: "청년정책 지원 챗봇",
@@ -12,7 +14,10 @@ export default function RootLayout({ children }) {
     <html lang="ko">
       <body>
         <AxiosConfig />
-        {children}
+        <AuthContextProvider>
+          <AppHeader />
+          {children}
+        </AuthContextProvider>
       </body>
     </html>
   );
