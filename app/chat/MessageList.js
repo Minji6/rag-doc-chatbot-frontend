@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-// 메시지 목록
-=======
 "use client"
 
 import { useRef, useEffect } from "react";
@@ -8,10 +5,8 @@ import UserMessage from "@/app/chat/UserMessage";
 import BotMessage from "@/app/chat/BotMessage";
 
 function MessageList({ messages = [], loading }) {
-    // DOM 참조 - 자동 스크롤용
     const messagesEndRef = useRef(null);
 
-    // 새 메시지 올 때 자동 스크롤
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages, loading]);
@@ -36,4 +31,3 @@ function MessageList({ messages = [], loading }) {
 }
 
 export default MessageList;
->>>>>>> add014d870ae8ea79fa8945bc538ca6618503a5c

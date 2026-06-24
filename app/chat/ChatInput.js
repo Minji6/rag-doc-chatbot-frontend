@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-// 질문 입력창
-=======
 function ChatInput({ input, loading, onSend, onInputChange, onKeyDown }) {
     return (
         <div className="chat-input-area">
@@ -30,4 +27,3 @@ function ChatInput({ input, loading, onSend, onInputChange, onKeyDown }) {
 }
 
 export default ChatInput;
->>>>>>> add014d870ae8ea79fa8945bc538ca6618503a5c

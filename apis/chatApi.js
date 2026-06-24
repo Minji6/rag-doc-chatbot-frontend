@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-// sendMessage, getChatRooms
-=======
 import axios from "axios";
 
 // 챗봇 메시지 전송
@@ -18,4 +15,3 @@ function sendChat(message, conversation_id, role = "guest", user_id = null) {
 export default {
     sendChat
 };
->>>>>>> add014d870ae8ea79fa8945bc538ca6618503a5c

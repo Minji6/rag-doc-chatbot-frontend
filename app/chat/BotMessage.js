@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-// 봇 말풍선
-=======
 function BotMessage({ content }) {
     return (
         <div className="message-row bot">
@@ -14,4 +11,3 @@ function BotMessage({ content }) {
 }
 
 export default BotMessage;
->>>>>>> add014d870ae8ea79fa8945bc538ca6618503a5c
