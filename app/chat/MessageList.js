@@ -3,6 +3,7 @@
 import { useRef, useEffect } from "react";
 import UserMessage from "@/app/chat/UserMessage";
 import BotMessage from "@/app/chat/BotMessage";
+import TypingIndicator from "@/app/chat/TypingIndicator";
 
 function MessageList({ messages = [], loading }) {
     // DOM 참조 - 자동 스크롤용
@@ -20,13 +21,7 @@ function MessageList({ messages = [], loading }) {
                     ? <UserMessage key={i} content={msg.content} />
                     : <BotMessage key={i} content={msg.content} />
             ))}
-            {/* TypingIndicator 로 분리 예정 (팀원 담당) */}
-            {loading && (
-                <div className="message-row bot">
-                    <div className="avatar bot">🤖</div>
-                    <div className="message-bubble bot">답변을 생성하는 중...</div>
-                </div>
-            )}
+            {loading && <TypingIndicator />}
             <div ref={messagesEndRef} />
         </div>
     );
