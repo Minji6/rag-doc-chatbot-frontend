@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>RAG 기반 청년 정책 멀티에이전트 챗봇 — 프로젝트 산출물</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', sans-serif; background: #f5f7fa; color: #1a1a2e; }
+
+    header {
+      background: linear-gradient(135deg, #1a1a2e, #16213e);
+      color: white; padding: 48px 60px;
+    }
+    header h1 { font-size: 2rem; font-weight: 700; margin-bottom: 8px; }
+    header p { font-size: 1rem; color: #a0aec0; }
+
+    nav {
+      background: #ffffff; border-bottom: 1px solid #e2e8f0;
+      padding: 0 60px; display: flex; gap: 32px;
+      position: sticky; top: 0; z-index: 100;
+    }
+    nav a {
+      display: block; padding: 16px 0; font-size: 0.9rem;
+      color: #4a5568; text-decoration: none; border-bottom: 2px solid transparent;
+    }
+    nav a:hover { color: #2b6cb0; border-color: #2b6cb0; }
+
+    main { max-width: 1100px; margin: 0 auto; padding: 48px 24px; }
+
+    section { margin-bottom: 64px; }
+    h2 {
+      font-size: 1.5rem; font-weight: 700; color: #1a1a2e;
+      border-left: 4px solid #2b6cb0; padding-left: 16px; margin-bottom: 24px;
+    }
+    h3 { font-size: 1.1rem; font-weight: 600; margin: 24px 0 12px; color: #2d3748; }
+
+    .card {
+      background: white; border-radius: 12px;
+      padding: 24px; margin-bottom: 16px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+    .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 16px; }
+
+    .badge {
+      display: inline-block; padding: 4px 12px; border-radius: 20px;
+      font-size: 0.78rem; font-weight: 600; margin: 4px 4px 4px 0;
+    }
+    .badge-blue   { background: #ebf8ff; color: #2b6cb0; }
+    .badge-green  { background: #f0fff4; color: #276749; }
+    .badge-purple { background: #faf5ff; color: #6b46c1; }
+    .badge-orange { background: #fffaf0; color: #c05621; }
+    .badge-gray   { background: #f7fafc; color: #4a5568; }
+
+    .flow-arrow {
+      display: flex; align-items: center; gap: 12px;
+      font-size: 0.9rem; margin: 8px 0;
+    }
+    .flow-box {
+      background: #ebf8ff; border: 1px solid #bee3f8;
+      border-radius: 8px; padding: 8px 16px; font-size: 0.85rem; color: #2b6cb0;
+    }
+    .flow-arrow span { color: #a0aec0; font-size: 1.2rem; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    th {
+      background: #f7fafc; text-align: left;
+      padding: 12px 16px; color: #4a5568; font-weight: 600;
+      border-bottom: 2px solid #e2e8f0;
+    }
+    td { padding: 12px 16px; border-bottom: 1px solid #e2e8f0; color: #2d3748; }
+    tr:last-child td { border-bottom: none; }
+
+    .domain-card {
+      border-radius: 12px; padding: 24px;
+      border-left: 4px solid;
+    }
+    .domain-housing    { border-color: #48bb78; background: #f0fff4; }
+    .domain-employment { border-color: #4299e1; background: #ebf8ff; }
+    .domain-education  { border-color: #9f7aea; background: #faf5ff; }
+    .domain-welfare    { border-color: #ed8936; background: #fffaf0; }
+
+    .domain-card h3 { margin-top: 0; }
+
+    .mermaid-wrap {
+      background: white; border-radius: 12px;
+      padding: 32px; overflow-x: auto;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+
+    .tag-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+
+    code {
+      background: #f7fafc; border-radius: 4px;
+      padding: 2px 6px; font-size: 0.85rem; color: #e53e3e;
+    }
+
+    .highlight-box {
+      background: #ebf8ff; border-radius: 10px;
+      padding: 16px 20px; margin: 16px 0; font-size: 0.9rem; color: #2b6cb0;
+    }
+
+    footer {
+      background: #1a1a2e; color: #a0aec0;
+      text-align: center; padding: 32px;
+      font-size: 0.85rem; margin-top: 48px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>RAG 기반 청년 정책 멀티에이전트 챗봇</h1>
+  <p>온통청년 공공 API 기반 · 4개 도메인 전문 에이전트 · LangGraph 멀티에이전트 아키텍처</p>
+</header>
+
+<nav>
+  <a href="#overview">프로젝트 개요</a>
+  <a href="#architecture">시스템 아키텍처</a>
+  <a href="#flow">에이전트 플로우</a>
+  <a href="#domains">도메인별 기능</a>
+  <a href="#rag">RAG 파이프라인</a>
+  <a href="#api">API 명세</a>
+  <a href="#team">팀 역할</a>
+</nav>
+
+<main>
+
+  <!-- 1. 프로젝트 개요 -->
+  <section id="overview">
+    <h2>1. 프로젝트 개요</h2>
+    <div class="card">
+      <p style="font-size:1rem; line-height:1.8; color:#4a5568;">
+        청년 대상 정부 정책(주거·취업·교육·복지문화)을 사용자 의도에 맞게 자동 분류하고,
+        도메인별 전문 AI 에이전트가 맞춤 답변을 제공하는 챗봇 시스템.
+        <br/>온통청년 공공 API에서 수집한 정책 데이터를 PGVector에 임베딩하여 RAG 방식으로 검색·생성을 분리 처리합니다.
+      </p>
+    </div>
+    <div class="grid-3">
+      <div class="card">
+        <h3>기술 스택</h3>
+        <div class="tag-list">
+          <span class="badge badge-blue">Python</span>
+          <span class="badge badge-blue">FastAPI</span>
+          <span class="badge badge-blue">LangGraph</span>
+          <span class="badge badge-blue">LangChain</span>
+          <span class="badge badge-green">Next.js</span>
+          <span class="badge badge-green">React</span>
+          <span class="badge badge-green">Axios</span>
+          <span class="badge badge-purple">GPT-4o-mini</span>
+          <span class="badge badge-purple">text-embedding-3-large</span>
+          <span class="badge badge-orange">PostgreSQL</span>
+          <span class="badge badge-orange">pgvector</span>
+        </div>
+      </div>
+      <div class="card">
+        <h3>데이터 출처</h3>
+        <p style="color:#4a5568; font-size:0.9rem; line-height:1.7;">
+          온통청년 공공 API<br/>
+          <code>youthcenter.go.kr</code><br/><br/>
+          컬렉션명: <code>youth_policy_all</code><br/>
+          임베딩 모델: <code>text-embedding-3-large</code>
+        </p>
+      </div>
+      <div class="card">
+        <h3>주요 수치</h3>
+        <p style="color:#4a5568; font-size:0.9rem; line-height:1.7;">
+          도메인 에이전트: <strong>4개</strong><br/>
+          LangGraph 노드: <strong>9개</strong><br/>
+          청크 크기: <strong>500자 / 오버랩 100자</strong><br/>
+          유사도 임계값: <strong>0.4 ~ 0.9 (도메인별)</strong>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. 시스템 아키텍처 -->
+  <section id="architecture">
+    <h2>2. 시스템 아키텍처</h2>
+    <div class="mermaid-wrap">
+      <div class="mermaid">
+graph TB
+    subgraph FE["Frontend (Next.js)"]
+        UI[채팅 UI]
+        Auth[AuthContext]
+        ChatAPI[chatApi.js / Axios]
+    end
+
+    subgraph BE["Backend (FastAPI)"]
+        EP["POST /api/chat/service"]
+        HIST["대화 이력 관리\nInMemory / PostgreSQL"]
+    end
+
+    subgraph LG["LangGraph 멀티에이전트"]
+        AN["분석 노드\n의도 분류"]
+        HS["주거 검색"] --> HN["주거 생성"]
+        ES["취업 검색"] --> EN["취업 생성"]
+        EDS["교육 검색"] --> EDN["교육 생성"]
+        WS["복지 검색"] --> WN["복지 생성"]
+        GN["결과 취합 노드"]
+        AN --> HS & ES & EDS & WS
+        HN & EN & EDN & WN --> GN
+    end
+
+    subgraph DB["데이터 레이어"]
+        PGV[("PGVector\nyouth_policy_all")]
+        OAI["OpenAI API"]
+    end
+
+    UI --> ChatAPI --> EP
+    EP --> HIST & LG
+    GN --> EP
+    HS & ES & EDS & WS -->|유사도 검색| PGV
+    PGV <-->|임베딩| OAI
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. 에이전트 플로우 -->
+  <section id="flow">
+    <h2>3. LangGraph 에이전트 플로우</h2>
+    <div class="mermaid-wrap">
+      <div class="mermaid">
+flowchart TD
+    START(["사용자 질문"])
+    AN["🔍 분석 노드\nGPT-4o-mini\ncategory + inquiry_type 분류"]
+    START --> AN
+
+    AN -->|일자리| ES
+    AN -->|주거| HS
+    AN -->|교육| EDS
+    AN -->|복지문화| WS
+
+    subgraph 취업["💼 취업 도메인"]
+      ES["검색 노드\nPGVector + D-day 필터"]
+      EN["생성 노드\nGPT-4o-mini"]
+      ES --> EN
+    end
+
+    subgraph 주거["🏠 주거 도메인"]
+      HS["검색 노드\nPGVector + 자격 사전진단"]
+      HN["생성 노드\nGPT-4o-mini"]
+      HS --> HN
+    end
+
+    subgraph 교육["📚 교육 도메인"]
+      EDS["검색 노드\nPGVector + 의도별 전략"]
+      EDN["생성 노드\nGPT-4o-mini"]
+      EDS --> EDN
+    end
+
+    subgraph 복지["🌿 복지문화 도메인"]
+      WS["검색 노드\nPGVector + 5항목 검증"]
+      WN["생성 노드\nGPT-4o-mini"]
+      WS --> WN
+    end
+
+    EN & HN & EDN & WN --> GN["📦 결과 취합 노드"]
+    GN --> END(["최종 응답"])
+      </div>
+    </div>
+    <div class="highlight-box" style="margin-top:24px;">
+      ✅ <strong>검색/생성 분리 패턴 (sec09)</strong> — 전 도메인 공통 적용.
+      검색 노드는 LLM 없이 순수 Python으로 PGVector 조회·필터링하고,
+      <code>knowledge_base (str)</code> + <code>policies (list)</code> 로 state를 통해 생성 노드에 전달합니다.
+    </div>
+  </section>
+
+  <!-- 4. 도메인별 기능 -->
+  <section id="domains">
+    <h2>4. 도메인별 차별화 기능</h2>
+    <div style="display:grid; gap:16px;">
+
+      <div class="domain-card domain-employment">
+        <h3>💼 취업(Employment) — D-day 기반 마감 필터</h3>
+        <p style="color:#4a5568; font-size:0.9rem; margin-bottom:16px;">
+          온통청년 API의 신청기간 구분(<code>aplyPrdSeCd</code>)과 날짜(<code>aplyYmd</code>) 필드를 이용해
+          마감·만료 정책을 자동 분류합니다. LLM 없이 순수 Python으로 처리합니다.
+        </p>
+        <div class="mermaid-wrap" style="padding:16px;">
+          <div class="mermaid">
+flowchart LR
+    A["PGVector 검색\nk=10"] --> B{"유사도 필터\n≤ 0.85"}
+    B --> C{"aplyPrdSeCd"}
+    C -->|마감| D["❌ 제외"]
+    C -->|상시| E["🟢 상시접수"]
+    C -->|특정기간| F{"날짜 파싱\naplyYmd"}
+    F -->|미래| G["🔵 D-N (날짜 마감)"]
+    F -->|과거| H["🟡 ⚠️ 현재 신청 불가"]
+    F -->|없음| I["통과 (safe default)"]
+    E & G & H & I --> J["knowledge_base\n→ LLM"]
+          </div>
+        </div>
+        <p style="font-size:0.85rem; color:#4a5568; margin-top:12px;">
+          지원 날짜 포맷: <code>YYYYMMDD</code>, <code>YYYY.MM.DD</code>, 범위형 <code>20250320 ~ 20250403</code>
+        </p>
+      </div>
+
+      <div class="domain-card domain-housing">
+        <h3>🏠 주거(Housing) — 자격 사전 진단</h3>
+        <p style="color:#4a5568; font-size:0.9rem;">
+          PGVector 검색 후 사용자 프로필(나이·지역·혼인 상태)과 정책 조건을 LLM 없이 비교하여
+          <strong>✅ 자격 충족 / ❓ 확인 필요 / ❌ 미충족</strong> 3단계로 분류.
+          생성 노드는 분류 결과를 바탕으로 【추천 정책】/【추가 확인 필요】/【자격 미충족 안내】 구조로 답변을 작성합니다.
+        </p>
+      </div>
+
+      <div class="domain-card domain-welfare">
+        <h3>🌿 복지문화(Welfare) — 5항목 자격 교차 검증</h3>
+        <p style="color:#4a5568; font-size:0.9rem;">
+          나이·고용 상태·소득·지역·학력 5개 항목을 교차 검증하는 <code>check_eligibility</code> 도구 탑재.
+          사용자 프로필에 빈 항목이 있으면 유도 질문으로 정보를 수집한 후 재검증합니다.
+          신청 마감 계산을 위한 <code>calculate_dday</code> 도구도 탑재.
+        </p>
+      </div>
+
+      <div class="domain-card domain-education">
+        <h3>📚 교육(Education) — 의도 유형별 검색 전략 분기</h3>
+        <p style="color:#4a5568; font-size:0.9rem; margin-bottom:12px;">
+          <code>inquiry_type</code>에 따라 검색 전략이 달라집니다.
+        </p>
+        <table>
+          <thead><tr><th>의도 유형</th><th>전략</th></tr></thead>
+          <tbody>
+            <tr><td>검색 (search)</td><td>기본 RAG</td></tr>
+            <tr><td>추천 (recommend)</td><td>사용자 프로필 포함 쿼리 강화</td></tr>
+            <tr><td>상세 (detail)</td><td>k=2, 정밀 검색</td></tr>
+            <tr><td>비교 (compare)</td><td>복수 정책 병렬 검색</td></tr>
+          </tbody>
+        </table>
+        <p style="font-size:0.85rem; color:#4a5568; margin-top:12px;">
+          역할별 유사도 임계값 분리: guest <code>0.9</code> / user <code>0.7</code>
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 5. RAG 파이프라인 -->
+  <section id="rag">
+    <h2>5. RAG 파이프라인</h2>
+    <div class="mermaid-wrap">
+      <div class="mermaid">
+flowchart LR
+    subgraph 수집["① 데이터 수집"]
+      API["온통청년 API"]
+      FETCH["페이지네이션\n전수 수집"]
+      API --> FETCH
+    end
+
+    subgraph 전처리["② 전처리"]
+      DOC["Document 변환\n코드값 → 한글명"]
+      CHUNK["청크 분할\n500자 / 오버랩 100자"]
+      DEDUP["중복 제거"]
+      FETCH --> DOC --> CHUNK --> DEDUP
+    end
+
+    subgraph 저장["③ 벡터 저장"]
+      EMB["text-embedding-3-large"]
+      PGV[("PGVector\nyouth_policy_all")]
+      DEDUP --> EMB --> PGV
+    end
+
+    subgraph 검색["④ 검색 (런타임)"]
+      Q["사용자 질문"]
+      QEMB["쿼리 임베딩"]
+      SIM["코사인 유사도\ncategory 필터"]
+      Q --> QEMB --> SIM
+      PGV --> SIM
+    end
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. API 명세 -->
+  <section id="api">
+    <h2>6. API 명세</h2>
+    <div class="card">
+      <table>
+        <thead><tr><th>Method</th><th>Endpoint</th><th>설명</th></tr></thead>
+        <tbody>
+          <tr><td><span class="badge badge-green">POST</span></td><td><code>/api/chat/service</code></td><td>챗봇 메시지 송수신</td></tr>
+          <tr><td><span class="badge badge-green">POST</span></td><td><code>/upload/youth-policy</code></td><td>정책 데이터 임베딩 저장</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <h3>요청 (FormData)</h3>
+        <table>
+          <thead><tr><th>파라미터</th><th>타입</th><th>설명</th></tr></thead>
+          <tbody>
+            <tr><td><code>message</code></td><td>string</td><td>사용자 메시지 (필수)</td></tr>
+            <tr><td><code>conversation_id</code></td><td>string</td><td>대화 식별자 (없으면 UUID 자동 생성)</td></tr>
+            <tr><td><code>role</code></td><td>user / guest</td><td>사용자 역할</td></tr>
+            <tr><td><code>user_id</code></td><td>int</td><td>회원 ID (role=user 시 필수)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <h3>응답 (JSON)</h3>
+        <pre style="background:#f7fafc; border-radius:8px; padding:16px; font-size:0.85rem; color:#2d3748; overflow-x:auto;">{
+  "conversation_id": "uuid-string",
+  "message": "에이전트 답변 텍스트"
+}</pre>
+        <h3 style="margin-top:16px;">대화 이력 전략</h3>
+        <p style="font-size:0.88rem; color:#4a5568; line-height:1.7;">
+          <strong>guest</strong> → HistoryInMemoryAgent (휘발성)<br/>
+          <strong>user</strong> → HistoryPostgreSQLAgent (PostgreSQL 영구 저장)<br/>
+          thread_id = <code>user_id:conversation_id</code>
+        </p>
+      </div>
+    </div>
+  </section>
+
+ 
+
+</main>
+
+<footer>
+  RAG 기반 청년 정책 멀티에이전트 챗봇 &nbsp;|&nbsp; 온통청년 공공 API 활용 &nbsp;|&nbsp; LangGraph 멀티에이전트 아키텍처
+</footer>
+
+<script>
+  mermaid.initialize({ startOnLoad: true, theme: 'default', securityLevel: 'loose' });
+</script>
+
+</body>
+</html>
