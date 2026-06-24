@@ -20,7 +20,7 @@ function Home() {
     const [messages, setMessages] = useState([INITIAL_MESSAGE]);
     const [input, setInput] = useState("");
     const [loading, setLoading] = useState(false);
-    const [conversationId, setConversationId] = useState(null);
+    const [conversationId, setConversationId] = useState(() => crypto.randomUUID());
     const [activeId, setActiveId] = useState(null);
 
     // 이벤트 처리 함수 정의
@@ -46,7 +46,7 @@ function Home() {
         try {
             const response = await chatApi.sendChat(text, conversationId);
             setConversationId(response.data.conversation_id);
-            setMessages(prev => [...prev, { role: "bot", content: response.data.answer }]);
+            setMessages(prev => [...prev, { role: "bot", content: response.data.message }]);
         } catch (err) {
             console.log(err);
             setMessages(prev => [...prev, { role: "bot", content: "서버 연결에 실패했습니다. 백엔드를 확인해주세요." }]);
