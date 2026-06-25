@@ -4,8 +4,9 @@ import { useRef, useEffect } from "react";
 import UserMessage from "@/app/chat/UserMessage";
 import BotMessage from "@/app/chat/BotMessage";
 import TypingIndicator from "@/app/chat/TypingIndicator";
+import EmptyState from "@/app/chat/EmptyState";
 
-function MessageList({ messages = [], loading }) {
+function MessageList({ messages = [], loading, onSelectQuestion }) {
     // DOM 참조 - 자동 스크롤용
     const messagesEndRef = useRef(null);
 
@@ -13,6 +14,10 @@ function MessageList({ messages = [], loading }) {
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages, loading]);
+
+    if (messages.length === 0 && !loading) {
+        return <EmptyState onSelectQuestion={onSelectQuestion} />;
+    }
 
     return (
         <div className="chat-messages">

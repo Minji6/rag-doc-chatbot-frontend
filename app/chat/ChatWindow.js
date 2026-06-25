@@ -3,7 +3,7 @@
 import MessageList from "@/app/chat/MessageList";
 import ChatInput from "@/app/chat/ChatInput";
 
-function ChatWindow({ messages = [], loading, input, onSend, onInputChange, onKeyDown }) {
+function ChatWindow({ messages = [], loading, input, onSend, onInputChange, onKeyDown, onSelectQuestion }) {
     return (
         <div className="chat-wrapper">
             {/* 대화 영역 헤더 */}
@@ -13,7 +13,7 @@ function ChatWindow({ messages = [], loading, input, onSend, onInputChange, onKe
             </div>
 
             {/* 메시지 목록 */}
-            <MessageList messages={messages} loading={loading} />
+            <MessageList messages={messages} loading={loading} onSelectQuestion={onSelectQuestion} />
 
             {/* 질문 입력창 */}
             <ChatInput
