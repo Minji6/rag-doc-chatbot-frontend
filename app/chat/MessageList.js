@@ -24,7 +24,7 @@ function MessageList({ messages = [], loading, onSelectQuestion }) {
             {messages.map((msg, i) => (
                 msg.role === "user"
                     ? <UserMessage key={i} content={msg.content} />
-                    : <BotMessage key={i} content={msg.content} />
+                    : <BotMessage key={i} content={msg.content} category={msg.category} inquiryType={msg.inquiry_type} />
             ))}
             {loading && <TypingIndicator />}
             <div ref={messagesEndRef} />

@@ -556,6 +556,37 @@ body {
 }
 
 /* ============================================================
+   AnalysisBadge
+   ============================================================ */
+.analysis-badge-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.analysis-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.category-badge {
+  border: none;
+  color: #fff;
+}
+
+.intent-badge {
+  background-color: var(--primary);
+  color: #fff;
+  border: none;
+}
+
+/* ============================================================
    BotMessage Markdown
    ============================================================ */
 .message-bubble.bot h1,
