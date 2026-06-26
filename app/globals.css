@@ -78,6 +78,13 @@ body {
   align-items: center;
   gap: 10px;
   padding: 8px 4px;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: background-color 0.15s;
+}
+
+.sidebar-logo:hover {
+  background-color: var(--surface-sub);
 }
 
 .sidebar-logo-img {
