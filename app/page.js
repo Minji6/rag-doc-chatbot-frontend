@@ -5,7 +5,6 @@ import chatApi from "@/apis/chatApi";
 import Sidebar from "@/app/Sidebar";
 import ChatWindow from "@/app/chat/ChatWindow";
 
-// 임시 대화 목록 (ChatContext 연동 전)
 const MOCK_CONVERSATIONS = [
     { id: "1", title: "교육 정책 추천", group: "today" },
     { id: "2", title: "주거 지원 정책", group: "today" },
@@ -14,12 +13,15 @@ const MOCK_CONVERSATIONS = [
 ];
 
 function Home() {
-    // 상태 정의
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState("");
     const [loading, setLoading] = useState(false);
     const [conversationId, setConversationId] = useState(() => crypto.randomUUID());
     const [activeId, setActiveId] = useState(null);
+
+    const activeTitle = activeId
+        ? (MOCK_CONVERSATIONS.find(c => c.id === activeId)?.title ?? "새 대화")
+        : (messages.length > 0 ? messages.find(m => m.role === "user")?.content?.slice(0, 20) ?? "새 대화" : "새 대화");
 
     // 이벤트 처리 함수 정의
     const handleSelectQuestion = (question) => {
@@ -87,6 +89,7 @@ function Home() {
                     onInputChange={e => setInput(e.target.value)}
                     onKeyDown={handleKeyDown}
                     onSelectQuestion={handleSelectQuestion}
+                    title={activeTitle}
                 />
             </div>
         </div>
