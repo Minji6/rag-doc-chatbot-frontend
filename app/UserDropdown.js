@@ -17,8 +17,13 @@ export default function UserDropdown() {
   }
 
   const handleCreateUser = async (userData) => {
-    await memberApi.createUser(userData)
-    await refreshUsers()
+    try {
+      await memberApi.createUser(userData)
+      await refreshUsers()
+    } catch (err) {
+      console.error("유저 생성 실패", err)
+      throw err
+    }
   }
 
   const handleDeleteUser = async (userId) => {

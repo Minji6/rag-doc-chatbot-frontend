@@ -70,6 +70,7 @@ function UserProfileModal({ users = [], onSelectUser, onCreateUser, onDeleteUser
     const [tab, setTab] = useState("select"); // "select" | "create"
     const [form, setForm] = useState(EMPTY_FORM);
     const [submitting, setSubmitting] = useState(false);
+    const [submitError, setSubmitError] = useState(null);
 
     const handleChange = (field, value) => {
         setForm((prev) => ({ ...prev, [field]: value }));
@@ -79,6 +80,7 @@ function UserProfileModal({ users = [], onSelectUser, onCreateUser, onDeleteUser
         e.preventDefault();
         if (!form.nickname.trim() || !form.birth_date) return;
         setSubmitting(true);
+        setSubmitError(null);
         try {
             await onCreateUser({
                 ...form,
@@ -88,6 +90,8 @@ function UserProfileModal({ users = [], onSelectUser, onCreateUser, onDeleteUser
             });
             setForm(EMPTY_FORM);
             setTab("select");
+        } catch {
+            setSubmitError("사용자 등록에 실패했습니다. 다시 시도해주세요.");
         } finally {
             setSubmitting(false);
         }
@@ -252,6 +256,9 @@ function UserProfileModal({ users = [], onSelectUser, onCreateUser, onDeleteUser
                             />
                         </div>
 
+                        {submitError && (
+                            <div className="modal-submit-error">{submitError}</div>
+                        )}
                         <button
                             className="modal-submit-btn"
                             type="submit"

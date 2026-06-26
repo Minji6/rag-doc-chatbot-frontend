@@ -14,6 +14,11 @@ export function ChatContextProvider({ children }) {
     const [messages, setMessages]               = useState([])
     const [loading, setLoading]                 = useState(false)
 
+    const handleNewChat = useCallback(() => {
+        setMessages([])
+        setConversationId(crypto.randomUUID())
+    }, [])
+
     // currentUser가 바뀌면 대화 목록 새로 로드
     useEffect(() => {
         if (!currentUser) {
@@ -26,12 +31,7 @@ export function ChatContextProvider({ children }) {
             .catch(err => console.error("대화 목록 조회 실패", err))
 
         handleNewChat()
-    }, [currentUser?.user_id])
-
-    const handleNewChat = () => {
-        setMessages([])
-        setConversationId(crypto.randomUUID())
-    }
+    }, [currentUser?.user_id, handleNewChat])
 
     // 사이드바에서 대화방 선택 시 히스토리 로드
     const handleSelectChat = useCallback(async (selectedConversationId) => {
@@ -100,7 +100,7 @@ export function ChatContextProvider({ children }) {
         } catch (err) {
             console.error("대화 삭제 실패", err)
         }
-    }, [currentUser, conversationId])
+    }, [currentUser, conversationId, handleNewChat])
 
     return (
         <ChatContext.Provider value={{

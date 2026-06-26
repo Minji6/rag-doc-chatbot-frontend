@@ -1,1 +1,5 @@
-export { default } from "@/app/chat/page";
+import { redirect } from "next/navigation";
+
+export default function RootPage() {
+    redirect("/chat");
+}

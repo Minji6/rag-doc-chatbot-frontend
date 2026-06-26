@@ -995,6 +995,13 @@ body {
 .modal-submit-btn:hover { opacity: 0.88; }
 .modal-submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
+.modal-submit-error {
+  color: #e53e3e;
+  font-size: 0.85rem;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
 /* ============================================================
    Sidebar chat item delete button
    ============================================================ */

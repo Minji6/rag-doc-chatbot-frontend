@@ -8,6 +8,7 @@ import ChatWindow from "@/app/chat/ChatWindow";
 function Home() {
     const {
         conversations,
+        conversationId,
         messages,
         loading,
         handleNewChat,
@@ -16,23 +17,18 @@ function Home() {
         handleDeleteChat,
     } = useChat()
 
-    const [input, setInput]       = useState("")
-    const [activeId, setActiveId] = useState(null)
+    const [input, setInput] = useState("")
 
-    const activeTitle = activeId
-        ? activeId.slice(0, 20)
-        : (messages.length > 0
-            ? messages.find(m => m.role === "user")?.content?.slice(0, 20) ?? "새 대화"
-            : "새 대화")
+    const activeTitle = messages.length > 0
+        ? messages.find(m => m.role === "user")?.content?.slice(0, 20) ?? "새 대화"
+        : "새 대화"
 
     const onNewChat = () => {
         handleNewChat()
-        setActiveId(null)
         setInput("")
     }
 
     const onSelectChat = (id) => {
-        setActiveId(id)
         handleSelectChat(id)
         setInput("")
     }
@@ -55,7 +51,7 @@ function Home() {
         <div className="app-layout">
             <Sidebar
                 conversations={conversations}
-                activeId={activeId}
+                activeId={conversationId}
                 onSelectChat={onSelectChat}
                 onNewChat={onNewChat}
                 onDeleteChat={handleDeleteChat}
