@@ -1,28 +1,27 @@
 "use client"
 
 function Sidebar({ conversations = [], activeId, onSelectChat, onNewChat }) {
+    // 날짜 그룹 분리
     const todayList = conversations.filter(c => c.group === "today");
     const lastWeekList = conversations.filter(c => c.group === "lastWeek");
 
     return (
         <div className="sidebar">
+            {/* 로고 영역 */}
             <div className="sidebar-logo">
-                <img
-                    src="/cheongpodo.png"
-                    alt="청포도"
-                    className="sidebar-logo-img"
-                    onError={e => { e.target.style.display = "none"; }}
-                />
+                <div className="sidebar-logo-avatar">정</div>
                 <div>
                     <div className="sidebar-logo-title">청포도</div>
-                    <div className="sidebar-logo-sub">청년정책 AI 친구·청포리</div>
+                    <div className="sidebar-logo-sub">청년정책 AI 챗봇</div>
                 </div>
             </div>
 
+            {/* 새 대화 시작 버튼 */}
             <button className="btn new-chat-btn w-100" onClick={onNewChat}>
                 + 새 대화 시작
             </button>
 
+            {/* 대화 목록 */}
             <div className="sidebar-chat-list">
                 {todayList.length > 0 && (
                     <div>
@@ -54,6 +53,7 @@ function Sidebar({ conversations = [], activeId, onSelectChat, onNewChat }) {
                 )}
             </div>
 
+            {/* 하단 상태 표시 */}
             <div className="sidebar-footer">
                 <span className="sidebar-online-dot"></span>
                 전국 청년정책 4,200+ 연동
