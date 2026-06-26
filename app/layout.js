@@ -2,11 +2,10 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./globals.css";
 import AxiosConfig from "@/apis/AxiosConfig";
 import { AuthContextProvider } from "@/contexts/AuthContext";
-import AppHeader from "./AppHeader";
 
 export const metadata = {
-  title: "청년정책 지원 챗봇",
-  description: "주거·취업·교육·복지 분야 청년 정책 안내 챗봇",
+  title: "청포도 – 청년정책 AI 친구",
+  description: "조건에 딱 맞는 청년 정책을 찾아드릴게요",
 };
 
 export default function RootLayout({ children }) {
@@ -15,7 +14,6 @@ export default function RootLayout({ children }) {
       <body>
         <AxiosConfig />
         <AuthContextProvider>
-          <AppHeader />
           {children}
         </AuthContextProvider>
       </body>

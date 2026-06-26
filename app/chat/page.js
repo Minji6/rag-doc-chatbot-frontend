@@ -1,1 +1,1 @@
-// ChatPage - 메인 화면
+export { default } from "@/app/page";

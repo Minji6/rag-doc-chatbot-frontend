@@ -34,6 +34,12 @@ export default function UserDropdown() {
         className="user-dropdown-btn"
         onClick={() => setIsOpen(prev => !prev)}
       >
+        <img
+          src="/cheongpodo.png"
+          alt="avatar"
+          className="user-dropdown-avatar"
+          onError={e => { e.target.style.display = "none"; }}
+        />
         {currentUser ? currentUser.nickname : "게스트"}
         <span className="dropdown-arrow">▾</span>
       </button>
@@ -46,7 +52,19 @@ export default function UserDropdown() {
                 className={`user-dropdown-item${currentUser?.user_id === user.user_id ? " active" : ""}`}
                 onClick={() => handleSelect(user)}
               >
-                {user.nickname}
+                <img
+                  src="/cheongpodo.png"
+                  alt="avatar"
+                  className="user-dropdown-item-avatar"
+                  onError={e => { e.target.style.display = "none"; }}
+                />
+                <div className="user-dropdown-item-info">
+                  <div className="user-dropdown-item-name">{user.nickname}</div>
+                  {user.sub && (
+                    <div className="user-dropdown-item-sub">{user.sub}</div>
+                  )}
+                </div>
+                <span className="dropdown-item-check">✓</span>
               </button>
             </li>
           ))}
