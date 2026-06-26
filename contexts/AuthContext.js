@@ -13,7 +13,7 @@ const USERS = [
 const AuthContext = createContext(null)
 
 export function AuthContextProvider({ children }) {
-  const [currentUser, setCurrentUser] = useState(USERS[0])
+  const [currentUser, setCurrentUser] = useState(null)
 
   return (
     <AuthContext.Provider value={{
