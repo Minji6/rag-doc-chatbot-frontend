@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
+import Image from "next/image"
 import { useAuth } from "@/contexts/AuthContext"
 
 export default function UserDropdown() {
@@ -34,11 +35,12 @@ export default function UserDropdown() {
         className="user-dropdown-btn"
         onClick={() => setIsOpen(prev => !prev)}
       >
-        <img
+        <Image
           src="/cheongpodo.png"
           alt="avatar"
+          width={26}
+          height={26}
           className="user-dropdown-avatar"
-          onError={e => { e.target.style.display = "none"; }}
         />
         {currentUser ? currentUser.nickname : "게스트"}
         <span className="dropdown-arrow">▾</span>
@@ -52,11 +54,12 @@ export default function UserDropdown() {
                 className={`user-dropdown-item${currentUser?.user_id === user.user_id ? " active" : ""}`}
                 onClick={() => handleSelect(user)}
               >
-                <img
+                <Image
                   src="/cheongpodo.png"
                   alt="avatar"
+                  width={30}
+                  height={30}
                   className="user-dropdown-item-avatar"
-                  onError={e => { e.target.style.display = "none"; }}
                 />
                 <div className="user-dropdown-item-info">
                   <div className="user-dropdown-item-name">{user.nickname}</div>
