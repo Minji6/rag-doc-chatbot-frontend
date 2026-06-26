@@ -11,26 +11,23 @@ function sendChat(message, conversation_id, role = "guest", user_id = null, atta
     return axios.post("/api/chat/service", formData);
 }
 
-// 대화 히스토리 조회
+// 대화 내용 조회
 function getHistory(conversation_id, role = "guest", user_id = null) {
-    return axios.get("/chat_history/get-history", {
-        params: {
-            conversation_id,
-            role,
-            ...(user_id !== null && { user_id }),
-        },
-    });
+    const params = { conversation_id, role };
+    if (user_id !== null) params.user_id = user_id;
+    return axios.get("/chat_history/get-history", { params });
 }
 
-// 대화 히스토리 삭제
+// 유저별 대화 목록 조회
+function getConversations(user_id) {
+    return axios.get("/chat_history/conversations", { params: { user_id } });
+}
+
+// 대화 삭제
 function clearHistory(conversation_id, role = "guest", user_id = null) {
-    return axios.delete("/chat_history/clear-history", {
-        params: {
-            conversation_id,
-            role,
-            ...(user_id !== null && { user_id }),
-        },
-    });
+    const params = { conversation_id, role };
+    if (user_id !== null) params.user_id = user_id;
+    return axios.delete("/chat_history/clear-history", { params });
 }
 
-export default { sendChat, getHistory, clearHistory };
+export default { sendChat, getHistory, getConversations, clearHistory };

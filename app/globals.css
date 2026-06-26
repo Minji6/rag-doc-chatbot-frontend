@@ -861,34 +861,301 @@ body {
 .message-bubble.bot p { margin: 4px 0; }
 
 /* ============================================================
+   UserProfileModal
+   ============================================================ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 500;
+}
+
+.modal-container {
+  background: var(--surface);
+  border-radius: 16px;
+  width: 420px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 8px 32px rgba(90, 168, 44, 0.15);
+  overflow: hidden;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px 0;
+}
+
+.modal-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.modal-close-btn {
+  background: none;
+  border: none;
+  font-size: 16px;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.modal-tabs {
+  display: flex;
+  gap: 0;
+  padding: 14px 24px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.modal-tab {
+  background: none;
+  border: none;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.modal-tab.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+}
+
+.modal-body {
+  padding: 16px 24px 24px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.modal-body::-webkit-scrollbar { width: 4px; }
+.modal-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+.modal-user-item-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.modal-user-item {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: var(--surface-sub);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.modal-user-item:hover { border-color: var(--primary); background: var(--primary-light); }
+.modal-user-item.guest { opacity: 0.7; }
+
+.modal-user-avatar { font-size: 22px; }
+
+.modal-user-avatar-img {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px var(--shadow-logo);
+}
+
+.modal-user-name { font-size: 14px; font-weight: 600; color: var(--text); }
+.modal-user-sub  { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+.modal-user-delete {
+  background: none;
+  border: none;
+  font-size: 13px;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 6px 8px;
+  border-radius: 8px;
+  transition: background 0.15s, color 0.15s;
+  flex-shrink: 0;
+}
+
+.modal-user-delete:hover { background: var(--border); color: var(--text); }
+
+.modal-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.modal-field label { font-size: 13px; font-weight: 600; color: var(--text); }
+
+.modal-input {
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 14px;
+  color: var(--text);
+  background: var(--bg);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.modal-input:focus { border-color: var(--primary); }
+
+.modal-select {
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 14px;
+  color: var(--text);
+  background: var(--bg);
+  outline: none;
+  cursor: pointer;
+}
+
+.modal-multi-select {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.modal-select-chip {
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: 1.5px solid var(--border);
+  background: var(--bg);
+  font-size: 12px;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.modal-select-chip.active {
+  background: var(--primary-light);
+  border-color: var(--primary);
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.modal-submit-btn {
+  margin-top: 4px;
+  padding: 12px;
+  border-radius: 12px;
+  border: none;
+  background: var(--primary);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.modal-submit-btn:hover { opacity: 0.88; }
+.modal-submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.modal-submit-error {
+  color: #e53e3e;
+  font-size: 0.85rem;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+/* ============================================================
+   Sidebar chat item delete button
+   ============================================================ */
+.sidebar-chat-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sidebar-chat-title {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sidebar-chat-delete-btn {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 11px;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.sidebar-chat-item:hover .sidebar-chat-delete-btn {
+  display: block;
+}
+
+.sidebar-chat-delete-btn:hover {
+  background-color: var(--border);
+  color: var(--text);
+}
+
+.sidebar-empty {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-align: center;
+  padding: 20px 0;
+}
+
+/* ============================================================
+   User delete button in dropdown
+   ============================================================ */
+.user-delete-btn {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 11px;
+  cursor: pointer;
+  padding: 2px 5px;
+  border-radius: 4px;
+  margin-left: auto;
+  line-height: 1;
+}
+
+.user-dropdown-item:hover .user-delete-btn {
+  display: block;
+}
+
+.user-delete-btn:hover {
+  background-color: var(--border);
+  color: var(--text);
+}
+
+/* ============================================================
    Responsive
    ============================================================ */
 @media (max-width: 768px) {
-  /* 사이드바 숨김 */
-  .sidebar {
-    display: none;
-  }
+  .sidebar { display: none; }
 
-  /* 채팅 메시지 패딩 축소 */
-  .chat-messages {
-    padding: 16px 16px;
-  }
+  .chat-messages { padding: 16px; }
 
-  /* 입력창 패딩 축소 */
-  .chat-input-area {
-    padding: 12px 16px 16px;
-  }
+  .chat-input-area { padding: 12px 16px 16px; }
 
-  /* 말풍선 최대 너비 확장 */
   .message-bubble { max-width: 85%; }
   .message-bubble.bot { max-width: 90%; }
 
-  /* 헤더 패딩 축소 */
-  .chat-header {
-    padding: 12px 16px;
-  }
+  .chat-header { padding: 12px 16px; }
 
-  /* 웰컴 화면 패딩 축소 */
   .empty-state {
     padding: 24px 16px;
     gap: 20px;
@@ -900,37 +1167,24 @@ body {
     max-width: 100%;
   }
 
-  .empty-state-tile {
-    padding: 14px;
-  }
+  .empty-state-tile { padding: 14px; }
 
-  .empty-state-chips {
-    gap: 6px;
-  }
+  .empty-state-chips { gap: 6px; }
 
   .empty-state-chip {
     padding: 6px 12px;
     font-size: 12px;
   }
 
-  /* 정책 카드 */
-  .policy-card {
-    max-width: 100%;
-  }
+  .policy-card { max-width: 100%; }
 }
 
 @media (max-width: 480px) {
-  .empty-state-grid {
-    grid-template-columns: 1fr 1fr;
-  }
+  .empty-state-grid { grid-template-columns: 1fr 1fr; }
 
-  .empty-state-title {
-    font-size: 18px;
-  }
+  .empty-state-title { font-size: 18px; }
 
-  .user-dropdown-btn span:not(.dropdown-arrow) {
-    display: none; /* 닉네임 숨김, 아바타만 표시 */
-  }
+  .user-dropdown-btn span:not(.dropdown-arrow) { display: none; }
 }
 
 /* ============================================================
