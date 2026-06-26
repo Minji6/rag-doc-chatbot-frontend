@@ -7,7 +7,7 @@ import ChatWindow from "@/app/chat/ChatWindow"
 import ErrorMessage from "@/app/chat/ErrorMessage"
 
 function ChatPage() {
-    const { conversations, activeId, messages, loading, sendMessage, startNewChat, selectConversation } = useChat()
+    const { messages, loading, sendMessage, startNewChat } = useChat()
     const [input, setInput] = useState("")
 
     const handleSend = async () => {
@@ -28,16 +28,9 @@ function ChatPage() {
         setInput(question)
     }
 
-    const activeTitle = conversations.find(c => c.id === activeId)?.title ?? "새 대화"
-
     return (
         <div className="app-layout">
-            <Sidebar
-                conversations={conversations}
-                activeId={activeId}
-                onSelectChat={selectConversation}
-                onNewChat={startNewChat}
-            />
+            <Sidebar onNewChat={startNewChat} />
             <div className="main-content">
                 <ErrorMessage />
                 <ChatWindow
@@ -48,7 +41,6 @@ function ChatPage() {
                     onInputChange={e => setInput(e.target.value)}
                     onKeyDown={handleKeyDown}
                     onSelectQuestion={handleSelectQuestion}
-                    title={activeTitle}
                 />
             </div>
         </div>
