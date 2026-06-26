@@ -319,7 +319,7 @@ body {
 }
 
 .message-bubble {
-  max-width: 65%;
+  max-width: 72%;
   padding: 14px 18px;
   border-radius: 18px;
   font-size: 14px;
@@ -826,30 +826,62 @@ body {
 /* ============================================================
    BotMessage Markdown
    ============================================================ */
-.message-bubble.bot h1,
-.message-bubble.bot h2,
-.message-bubble.bot h3 {
-  font-size: 14px;
+
+/* ## 분야 섹션 헤더 (주거 / 일자리 / 교육 / 복지문화) */
+.message-bubble.bot h2 {
+  font-size: 13px;
   font-weight: 700;
-  color: var(--text);
-  margin: 12px 0 4px;
+  color: var(--primary);
+  margin: 18px 0 8px;
+  padding: 6px 10px;
+  background: var(--primary-light);
+  border-left: 3px solid var(--primary);
+  border-radius: 0 6px 6px 0;
+  letter-spacing: 0.02em;
 }
 
-.message-bubble.bot h1:first-child,
-.message-bubble.bot h2:first-child,
-.message-bubble.bot h3:first-child { margin-top: 0; }
+.message-bubble.bot h2:first-child { margin-top: 4px; }
+
+/* ### 개별 정책명 */
+.message-bubble.bot h3 {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 14px 0 5px;
+  padding-left: 8px;
+  border-left: 2px solid var(--border);
+}
+
+.message-bubble.bot h3:first-child { margin-top: 4px; }
+
+.message-bubble.bot h1 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 12px 0 6px;
+}
 
 .message-bubble.bot ul,
 .message-bubble.bot ol {
-  padding-left: 18px;
-  margin: 4px 0;
+  padding-left: 20px;
+  margin: 6px 0;
 }
 
-.message-bubble.bot li { margin: 2px 0; }
+.message-bubble.bot li {
+  margin: 4px 0;
+  line-height: 1.55;
+}
+
+.message-bubble.bot li + li { margin-top: 5px; }
 
 .message-bubble.bot strong {
   font-weight: 600;
   color: var(--text);
+}
+
+.message-bubble.bot em {
+  color: var(--text-muted);
+  font-style: normal;
 }
 
 .message-bubble.bot a {
@@ -858,7 +890,66 @@ body {
   word-break: break-all;
 }
 
-.message-bubble.bot p { margin: 4px 0; }
+.message-bubble.bot p {
+  margin: 6px 0;
+  line-height: 1.6;
+}
+
+.message-bubble.bot p:first-child { margin-top: 0; }
+
+.message-bubble.bot hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 12px 0;
+}
+
+.message-bubble.bot code {
+  background: var(--surface-sub);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1px 5px;
+  font-size: 12px;
+  font-family: "Consolas", monospace;
+}
+
+.message-bubble.bot pre {
+  background: var(--surface-sub);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  overflow-x: auto;
+  margin: 8px 0;
+}
+
+.message-bubble.bot pre code {
+  border: none;
+  padding: 0;
+  background: transparent;
+}
+
+.message-bubble.bot table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin: 8px 0;
+}
+
+.message-bubble.bot th,
+.message-bubble.bot td {
+  border: 1px solid var(--border);
+  padding: 6px 10px;
+  text-align: left;
+}
+
+.message-bubble.bot th {
+  background: var(--primary-light);
+  font-weight: 600;
+  color: var(--text);
+}
+
+.message-bubble.bot tr:nth-child(even) td {
+  background: var(--surface-sub);
+}
 
 /* ============================================================
    UserProfileModal
