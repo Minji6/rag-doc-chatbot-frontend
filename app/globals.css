@@ -857,6 +857,79 @@ body {
 .message-bubble.bot p { margin: 4px 0; }
 
 /* ============================================================
+   Responsive
+   ============================================================ */
+@media (max-width: 768px) {
+  /* 사이드바 숨김 */
+  .sidebar {
+    display: none;
+  }
+
+  /* 채팅 메시지 패딩 축소 */
+  .chat-messages {
+    padding: 16px 16px;
+  }
+
+  /* 입력창 패딩 축소 */
+  .chat-input-area {
+    padding: 12px 16px 16px;
+  }
+
+  /* 말풍선 최대 너비 확장 */
+  .message-bubble { max-width: 85%; }
+  .message-bubble.bot { max-width: 90%; }
+
+  /* 헤더 패딩 축소 */
+  .chat-header {
+    padding: 12px 16px;
+  }
+
+  /* 웰컴 화면 패딩 축소 */
+  .empty-state {
+    padding: 24px 16px;
+    gap: 20px;
+  }
+
+  .empty-state-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    max-width: 100%;
+  }
+
+  .empty-state-tile {
+    padding: 14px;
+  }
+
+  .empty-state-chips {
+    gap: 6px;
+  }
+
+  .empty-state-chip {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  /* 정책 카드 */
+  .policy-card {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .empty-state-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .empty-state-title {
+    font-size: 18px;
+  }
+
+  .user-dropdown-btn span:not(.dropdown-arrow) {
+    display: none; /* 닉네임 숨김, 아바타만 표시 */
+  }
+}
+
+/* ============================================================
    TypingIndicator
    ============================================================ */
 .typing-dot {
