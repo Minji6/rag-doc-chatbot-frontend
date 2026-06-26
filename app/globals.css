@@ -183,6 +183,33 @@ body {
 }
 
 /* ============================================================
+   ErrorMessage
+   ============================================================ */
+.error-message-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 24px;
+  background-color: #FFF0F0;
+  border-bottom: 1px solid #FFD0D0;
+  flex-shrink: 0;
+}
+
+.error-message-text {
+  font-size: 13px;
+  color: var(--dday-urgent);
+}
+
+.error-message-close {
+  background: none;
+  border: none;
+  font-size: 14px;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0 4px;
+}
+
+/* ============================================================
    ChatWindow
    ============================================================ */
 .chat-wrapper {
