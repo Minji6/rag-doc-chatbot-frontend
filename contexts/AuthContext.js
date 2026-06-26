@@ -1,26 +1,39 @@
 "use client"
 
-import { createContext, useContext, useState } from "react"
-
-const USERS = [
-  { user_id: 1, nickname: "김청년",   sub: "25세 · 서울 · 사회초생" },
-  { user_id: 2, nickname: "이햇살",   sub: "23세 · 부산 · 대학 재학" },
-  { user_id: 3, nickname: "박도전",   sub: "29세 · 대전 · 구직 중" },
-  { user_id: 4, nickname: "느린걸음", sub: null },
-  { user_id: 5, nickname: "달리는청춘", sub: null },
-]
+import { createContext, useContext, useState, useEffect, useCallback } from "react"
+import memberApi from "@/apis/memberApi"
 
 const AuthContext = createContext(null)
 
 export function AuthContextProvider({ children }) {
-  const [currentUser, setCurrentUser] = useState(USERS[0])
+  const [users, setUsers] = useState([])
+  const [currentUser, setCurrentUser] = useState(null)
+
+  const refreshUsers = useCallback(async () => {
+    try {
+      const res = await memberApi.getUsers()
+      setUsers(res.data)
+    } catch (err) {
+      console.error("유저 목록 조회 실패", err)
+    }
+  }, [])
+
+  useEffect(() => { refreshUsers() }, [refreshUsers])
+
+  const deleteUser = useCallback(async (userId) => {
+    await memberApi.deleteUser(userId)
+    setUsers(prev => prev.filter(u => u.user_id !== userId))
+    setCurrentUser(prev => prev?.user_id === userId ? null : prev)
+  }, [])
 
   return (
     <AuthContext.Provider value={{
-      users: USERS,
+      users,
       currentUser,
-      selectUser: (user) => setCurrentUser(user),
-      clearUser: () => setCurrentUser(null),
+      selectUser:   (user) => setCurrentUser(user),
+      clearUser:    () => setCurrentUser(null),
+      refreshUsers,
+      deleteUser,
     }}>
       {children}
     </AuthContext.Provider>

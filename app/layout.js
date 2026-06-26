@@ -2,6 +2,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./globals.css";
 import AxiosConfig from "@/apis/AxiosConfig";
 import { AuthContextProvider } from "@/contexts/AuthContext";
+import { ChatContextProvider } from "@/contexts/ChatContext";
 
 export const metadata = {
   title: "청포도 – 청년정책 AI 친구",
@@ -14,7 +15,9 @@ export default function RootLayout({ children }) {
       <body>
         <AxiosConfig />
         <AuthContextProvider>
-          {children}
+          <ChatContextProvider>
+            {children}
+          </ChatContextProvider>
         </AuthContextProvider>
       </body>
     </html>
