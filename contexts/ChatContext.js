@@ -47,6 +47,7 @@ export function ChatContextProvider({ children }) {
                 category:     data.category     ?? [],
                 inquiry_type: data.inquiry_type ?? "",
                 policies:     data.policies     ?? [],
+                suggestions:  data.suggestions  ?? [],
             }])
         } catch (err) {
             const msg = err.response?.data?.detail ?? "서버 연결에 실패했습니다. 백엔드를 확인해주세요."
