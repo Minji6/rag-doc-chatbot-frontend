@@ -1,7 +1,6 @@
 import Image from "next/image";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import PolicyCard from "@/app/chat/PolicyCard";
 
 const CATEGORY_STYLE = {
     복지문화: { color: "var(--color-welfare)",   bg: "var(--color-welfare-bg)" },
@@ -56,14 +55,6 @@ function BotMessage({ content, category = [], inquiry_type = "", policies = [], 
                 )}
 
                 <ReactMarkdown remarkPlugins={[remarkGfm]}>{cleanContent}</ReactMarkdown>
-
-                {policies.length > 0 && (
-                    <div className="policy-card-list">
-                        {policies.map((policy, i) => (
-                            <PolicyCard key={i} policy={policy} />
-                        ))}
-                    </div>
-                )}
 
                 {suggestions.length > 0 && (
                     <div className="suggestions-row">

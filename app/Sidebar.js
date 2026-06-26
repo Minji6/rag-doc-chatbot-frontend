@@ -1,7 +1,6 @@
 "use client"
 
 import Image from "next/image"
-import Link from "next/link"
 import ChatRoomItem from "@/app/chat/ChatRoomItem"
 import NewChatButton from "@/app/chat/NewChatButton"
 
@@ -11,9 +10,10 @@ function Sidebar({ conversations = [], activeId, onSelectChat, onNewChat }) {
 
     return (
         <div className="sidebar">
-            <Link href="/" className="sidebar-logo">
+            {/* 로고 클릭 → 새 대화(홈)으로 */}
+            <button className="sidebar-logo" onClick={onNewChat}>
                 <Image
-                    src="/cheongpodo.png"
+                    src="/logo.png"
                     alt="청포도"
                     width={38}
                     height={38}
@@ -23,7 +23,7 @@ function Sidebar({ conversations = [], activeId, onSelectChat, onNewChat }) {
                     <div className="sidebar-logo-title">청포도</div>
                     <div className="sidebar-logo-sub">청년정책 AI 챗봇</div>
                 </div>
-            </Link>
+            </button>
 
             <NewChatButton onClick={onNewChat} />
 
