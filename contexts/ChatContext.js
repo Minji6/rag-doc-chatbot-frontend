@@ -3,15 +3,7 @@
 import { createContext, useContext, useState, useEffect, useCallback } from "react"
 import { useAuth } from "@/contexts/AuthContext"
 import chatApi from "@/apis/chatApi"
-import {
-    withTitles,
-    deriveTitle,
-    rememberTitle,
-    loadGuestConversations,
-    loadGuestMessages,
-    saveGuestConversation,
-    deleteGuestConversation,
-} from "@/utils/conversationStore"
+import { withTitles, deriveTitle, rememberTitle, forgetTitle } from "@/utils/conversationStore"
 
 const ChatContext = createContext(null)
 
@@ -36,11 +28,12 @@ export function ChatContextProvider({ children }) {
     }, [])
 
     // currentUser가 바뀌면 대화 목록 새로 로드.
-    // 게스트는 localStorage가 단일 출처, 유저는 백엔드 목록에 캐시된 제목을 보강한다.
+    // 게스트는 백엔드가 InMemorySaver(휘발성)로 설계 → 목록 없음(새로고침 시 소멸).
+    // 유저는 백엔드 목록(conversation_id)에 캐시된 제목을 보강한다.
     useEffect(() => {
         handleNewChat()
         if (!currentUser) {
-            setConversations(loadGuestConversations())
+            setConversations([])
             return
         }
         chatApi.getConversations(currentUser.user_id)
@@ -48,14 +41,10 @@ export function ChatContextProvider({ children }) {
             .catch(err => console.error("대화 목록 조회 실패", err))
     }, [currentUser?.user_id, handleNewChat])
 
-    // 사이드바에서 대화방 선택 시 히스토리 로드.
-    // 게스트는 localStorage에서 정책 카드 메타까지 그대로 복원한다.
+    // 사이드바에서 대화방 선택 시 히스토리 로드 (유저 전용 — 게스트는 목록 자체가 없음).
     const handleSelectChat = useCallback(async (selectedConversationId) => {
+        if (!currentUser) return
         setConversationId(selectedConversationId)
-        if (!currentUser) {
-            setMessages(loadGuestMessages(selectedConversationId))
-            return
-        }
         try {
             const res = await chatApi.getHistory(
                 selectedConversationId, "user", String(currentUser.user_id)
@@ -76,49 +65,43 @@ export function ChatContextProvider({ children }) {
         const role   = currentUser ? "user" : "guest"
         const userId = currentUser ? String(currentUser.user_id) : null
 
-        const optimistic = [...messages, { role: "user", content: text }]
-        setMessages(optimistic)
+        setMessages(prev => [...prev, { role: "user", content: text }])
         setLoading(true)
 
         try {
             const res = await chatApi.sendChat(text, conversationId, role, userId)
             const newConvId = res.data.conversation_id
-            const next = [...optimistic, {
+            setConversationId(newConvId)
+            setMessages(prev => [...prev, {
                 role:         "bot",
                 content:      res.data.message,
                 category:     res.data.category     ?? [],
                 inquiry_type: res.data.inquiry_type ?? "",
                 policies:     res.data.policies     ?? [],
-            }]
-            setConversationId(newConvId)
-            setMessages(next)
+            }])
 
-            // 게스트: localStorage 영속화(제목 파생 포함) / 유저: 제목 캐시만 보강.
-            const title = currentUser
-                ? deriveTitle(text)
-                : saveGuestConversation(newConvId, next)
-            if (currentUser) rememberTitle(newConvId, title)
-            setConversations(prev => upsertConversation(prev, newConvId, title))
+            // 유저만 사이드바 목록·제목을 갱신. 게스트는 휘발성이라 목록을 만들지 않는다.
+            if (currentUser) {
+                const title = deriveTitle(text)
+                rememberTitle(newConvId, title)
+                setConversations(prev => upsertConversation(prev, newConvId, title))
+            }
         } catch (err) {
             console.error(err)
-            setMessages([...optimistic, {
+            setMessages(prev => [...prev, {
                 role: "bot",
                 content: "서버 연결에 실패했습니다. 백엔드를 확인해주세요.",
             }])
         } finally {
             setLoading(false)
         }
-    }, [currentUser, conversationId, loading, messages])
+    }, [currentUser, conversationId, loading])
 
     const handleDeleteChat = useCallback(async (targetConversationId) => {
-        if (!currentUser) {
-            deleteGuestConversation(targetConversationId)
-            setConversations(loadGuestConversations())
-            if (conversationId === targetConversationId) handleNewChat()
-            return
-        }
+        if (!currentUser) return
         try {
             await chatApi.clearHistory(targetConversationId, "user", String(currentUser.user_id))
+            forgetTitle(targetConversationId)
             setConversations(prev => prev.filter(c => c.conversation_id !== targetConversationId))
             if (conversationId === targetConversationId) handleNewChat()
         } catch (err) {
