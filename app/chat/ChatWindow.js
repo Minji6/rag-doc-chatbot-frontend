@@ -4,7 +4,7 @@ import MessageList from "@/app/chat/MessageList";
 import ChatInput from "@/app/chat/ChatInput";
 import UserDropdown from "@/app/UserDropdown";
 
-function ChatWindow({ messages = [], loading, input, onSend, onInputChange, onKeyDown, onSelectQuestion, title = "새 대화" }) {
+function ChatWindow({ messages = [], loading, input, attach, onSend, onInputChange, onKeyDown, onAttach, onRemoveAttach, onSelectQuestion, title = "새 대화" }) {
     return (
         <div className="chat-wrapper">
             <div className="chat-header">
@@ -22,9 +22,12 @@ function ChatWindow({ messages = [], loading, input, onSend, onInputChange, onKe
             <ChatInput
                 input={input}
                 loading={loading}
+                attach={attach}
                 onSend={onSend}
                 onInputChange={onInputChange}
                 onKeyDown={onKeyDown}
+                onAttach={onAttach}
+                onRemoveAttach={onRemoveAttach}
             />
         </div>
     );

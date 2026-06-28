@@ -18,6 +18,7 @@ function Home() {
     } = useChat()
 
     const [input, setInput] = useState("")
+    const [attach, setAttach] = useState(null)
 
     const activeTitle = messages.length > 0
         ? messages.find(m => m.role === "user")?.content?.slice(0, 20) ?? "새 대화"
@@ -26,18 +27,22 @@ function Home() {
     const onNewChat = () => {
         handleNewChat()
         setInput("")
+        setAttach(null)
     }
 
     const onSelectChat = (id) => {
         handleSelectChat(id)
         setInput("")
+        setAttach(null)
     }
 
     const onSend = async () => {
         const text = input.trim()
-        if (!text || loading) return
+        if ((!text && !attach) || loading) return
+        const sent = attach
         setInput("")
-        await handleSend(text)
+        setAttach(null)
+        await handleSend(text, sent)
     }
 
     const onKeyDown = (e) => {
@@ -61,9 +66,12 @@ function Home() {
                     messages={messages}
                     loading={loading}
                     input={input}
+                    attach={attach}
                     onSend={onSend}
                     onInputChange={e => setInput(e.target.value)}
                     onKeyDown={onKeyDown}
+                    onAttach={setAttach}
+                    onRemoveAttach={() => setAttach(null)}
                     onSelectQuestion={q => setInput(q)}
                     title={activeTitle}
                 />

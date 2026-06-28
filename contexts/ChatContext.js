@@ -51,17 +51,23 @@ export function ChatContextProvider({ children }) {
         }
     }, [currentUser])
 
-    const handleSend = useCallback(async (text) => {
-        if (!text.trim() || loading) return
+    const handleSend = useCallback(async (text, attach = null) => {
+        // 텍스트가 비어도 이미지가 있으면 전송 허용 (이미지 단독 질의)
+        if ((!text.trim() && !attach) || loading) return
 
         const role   = currentUser ? "user" : "guest"
         const userId = currentUser ? String(currentUser.user_id) : null
 
-        setMessages(prev => [...prev, { role: "user", content: text }])
+        // 이미지만 보낼 때도 백엔드 분석이 동작하도록 기본 질의를 채운다
+        const apiMessage = text.trim() || "첨부한 이미지를 분석해 주세요"
+        // 유저 말풍선에 보여줄 첨부 미리보기 (브라우저 메모리 URL)
+        const imagePreview = attach ? URL.createObjectURL(attach) : null
+
+        setMessages(prev => [...prev, { role: "user", content: text.trim(), image: imagePreview }])
         setLoading(true)
 
         try {
-            const res = await chatApi.sendChat(text, conversationId, role, userId)
+            const res = await chatApi.sendChat(apiMessage, conversationId, role, userId, attach)
             const newConvId = res.data.conversation_id
             setConversationId(newConvId)
             setMessages(prev => [...prev, {
