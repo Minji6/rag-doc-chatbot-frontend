@@ -1,23 +1,13 @@
-const CATEGORY_STYLE = {
-    복지문화: { color: "var(--color-welfare)",   bg: "var(--color-welfare-bg)" },
-    주거:     { color: "var(--color-housing)",   bg: "var(--color-housing-bg)" },
-    교육:     { color: "var(--color-education)", bg: "var(--color-education-bg)" },
-    일자리:   { color: "var(--color-job)",       bg: "var(--color-job-bg)" },
-};
+import { categoryStyle, getDdayInfo } from "@/utils/policy";
 
-// "YYYYMMDD  " → D-N 계산
-function calcDday(endYmd) {
-    if (!endYmd || !endYmd.trim()) return null;
-    const clean = endYmd.trim();
-    if (clean.length < 8) return null;
-    const y = clean.slice(0, 4), m = clean.slice(4, 6), d = clean.slice(6, 8);
-    const end = new Date(`${y}-${m}-${d}`);
-    if (isNaN(end)) return null;
-    const diff = Math.ceil((end - new Date()) / (1000 * 60 * 60 * 24));
-    return diff;
-}
-
-function PolicyCard({ policy }) {
+/**
+ * 정책 요약 카드 (목록용).
+ *
+ * - 게스트: 푸터의 "자세히 보기 →"가 외부 신청 URL로 직접 이동한다.
+ * - 로그인 유저: onDetail 콜백이 주입되면 "자세히 보기 →"가 상세 모달을 연다.
+ *   (로그인 유저에게만 모달 진입점을 노출하라는 요구사항을 onDetail 유무로 표현)
+ */
+function PolicyCard({ policy, onDetail }) {
     const {
         plcyNm,           // 정책명
         category,         // 분야
@@ -25,28 +15,16 @@ function PolicyCard({ policy }) {
         plcyExplnCn,      // 정책 설명
         ptcpPrpTrgtCn,    // 참여 대상
         aplyUrlAddr,      // 신청 URL
-        aplyPrdSeCd,      // 신청기간 구분
-        bizPrdEndYmd,     // 사업 종료일
         sprtTrgtMinAge,
         sprtTrgtMaxAge,
         sprtTrgtAgeLmtYn,
     } = policy;
 
-    const style = CATEGORY_STYLE[category] ?? { color: "var(--primary)", bg: "var(--primary-light)" };
+    const style = categoryStyle(category);
     const description = plcySprtCn || plcyExplnCn;
+    const dday = getDdayInfo(policy);
 
-    // D-day 계산
-    let ddayLabel = null;
-    if (aplyPrdSeCd === "상시모집") {
-        ddayLabel = "상시모집";
-    } else if (aplyPrdSeCd === "마감") {
-        ddayLabel = "마감";
-    } else if (bizPrdEndYmd) {
-        const d = calcDday(bizPrdEndYmd);
-        if (d !== null) ddayLabel = d >= 0 ? `D-${d}` : "마감";
-    }
-
-    // 태그 빌드
+    // 태그 빌드 — 연령 제한이 명시된 정책만 나이 범위를 노출.
     const tags = [];
     if (sprtTrgtAgeLmtYn === "Y" && sprtTrgtMinAge && sprtTrgtMaxAge) {
         tags.push(`만 ${sprtTrgtMinAge}~${sprtTrgtMaxAge}세`);
@@ -64,9 +42,9 @@ function PolicyCard({ policy }) {
                 >
                     {category}
                 </span>
-                {ddayLabel && (
-                    <span className={`policy-card-dday${ddayLabel === "상시모집" || ddayLabel === "마감" ? " always-open" : ""}`}>
-                        {ddayLabel}
+                {dday && (
+                    <span className={`policy-card-dday${dday.muted ? " always-open" : ""}`}>
+                        {dday.label}
                     </span>
                 )}
             </div>
@@ -84,7 +62,13 @@ function PolicyCard({ policy }) {
 
             <div className="policy-card-footer">
                 <span />
-                {url ? (
+                {onDetail ? (
+                    // 로그인 유저: 상세 모달 진입
+                    <button type="button" className="policy-card-link" onClick={() => onDetail(policy)}>
+                        자세히 보기 →
+                    </button>
+                ) : url ? (
+                    // 게스트: 외부 신청 URL로 직접 이동
                     <a href={url} target="_blank" rel="noreferrer" className="policy-card-link">
                         자세히 보기 →
                     </a>

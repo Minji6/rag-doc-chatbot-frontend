@@ -475,6 +475,11 @@ body {
 }
 
 .policy-card-link {
+  /* <a>·<button>·<span> 어느 태그로 렌더되든 동일하게 보이도록 버튼 기본 스타일 리셋 */
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: inherit;
   font-size: 12px;
   color: var(--text-muted);
   cursor: pointer;
@@ -484,6 +489,105 @@ body {
 
 .policy-card-link:hover {
   color: var(--primary);
+}
+
+/* ============================================================
+   PolicyDetailModal (로그인 유저 상세 모달)
+   ============================================================ */
+.policy-detail-modal {
+  background: var(--surface);
+  border-radius: 16px;
+  width: 460px;
+  max-width: calc(100vw - 32px);
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 8px 32px rgba(90, 168, 44, 0.18);
+  overflow: hidden;
+}
+
+.policy-detail-header {
+  padding: 18px 24px 20px;
+}
+
+.policy-detail-header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.policy-detail-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.35;
+}
+
+.policy-detail-dday {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--dday-urgent);
+}
+
+.policy-detail-dday.always-open {
+  color: var(--text-muted);
+}
+
+.policy-detail-body {
+  padding: 20px 24px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.policy-detail-body::-webkit-scrollbar { width: 4px; }
+.policy-detail-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+.policy-detail-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.policy-detail-value {
+  font-size: 14px;
+  color: var(--text);
+  line-height: 1.65;
+  white-space: pre-line;
+}
+
+.policy-detail-footer {
+  padding: 16px 24px;
+  border-top: 1px solid var(--border);
+}
+
+.policy-detail-apply-btn {
+  display: block;
+  width: 100%;
+  padding: 13px 0;
+  border-radius: 12px;
+  background: var(--primary);
+  color: var(--primary-text);
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+  transition: opacity 0.15s;
+}
+
+.policy-detail-apply-btn:hover {
+  opacity: 0.9;
+}
+
+.policy-detail-apply-btn.disabled {
+  background: var(--border);
+  color: var(--text-muted);
+  cursor: not-allowed;
 }
 
 /* ============================================================
@@ -831,13 +935,10 @@ body {
 .message-bubble.bot h2 {
   font-size: 13px;
   font-weight: 700;
-  color: var(--primary);
+  color: var(--text-muted);
   margin: 18px 0 8px;
-  padding: 6px 10px;
-  background: var(--primary-light);
-  border-left: 3px solid var(--primary);
-  border-radius: 0 6px 6px 0;
-  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .message-bubble.bot h2:first-child { margin-top: 4px; }
