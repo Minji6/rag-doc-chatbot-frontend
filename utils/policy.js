@@ -47,3 +47,42 @@ export function formatApplyPeriod(policy) {
     if (begin && end) return `${begin} ~ ${end}`;
     return begin || end || "";
 }
+
+/** 정책 마감일을 Date로 파싱 (YYYYMMDD). 상시/마감/형식오류면 null. */
+export function getDeadlineDate(policy) {
+    if (!policy) return null;
+    const se = (policy.aplyPrdSeCd || "").trim();
+    if (se === "상시" || se === "마감") return null;
+    const end = (policy.bizPrdEndYmd || "").trim();
+    if (end.length < 8) return null;
+    const date = new Date(`${end.slice(0, 4)}-${end.slice(4, 6)}-${end.slice(6, 8)}`);
+    if (isNaN(date)) return null;
+    date.setHours(0, 0, 0, 0);
+    return date;
+}
+
+/** 마감까지 남은 일수(정수). 상시/마감/형식오류면 null. */
+export function getDdayNumber(policy) {
+    const date = getDeadlineDate(policy);
+    if (!date) return null;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return Math.floor((date - today) / 86_400_000);
+}
+
+// 마감 임박도 단계 — 캘린더 하이라이트/범례 색의 단일 출처.
+export const URGENCY = {
+    urgent:  { label: "긴급", color: "#E5484D" },  // D-7 이하
+    soon:    { label: "임박", color: "#F59E3C" },  // D-21 이하
+    relaxed: { label: "여유", color: "#5AA82C" },  // 그 외
+    always:  { label: "상시", color: "#9AA0A6" },  // 마감 없음/지남
+};
+
+/** 정책의 임박도 단계 키를 반환 (URGENCY의 키). */
+export function getUrgencyLevel(policy) {
+    const days = getDdayNumber(policy);
+    if (days === null || days < 0) return "always";
+    if (days <= 7) return "urgent";
+    if (days <= 21) return "soon";
+    return "relaxed";
+}

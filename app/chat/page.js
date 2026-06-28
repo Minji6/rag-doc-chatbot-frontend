@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { ChatContextProvider, useChat } from "@/contexts/ChatContext";
+import { SavedPoliciesProvider } from "@/contexts/SavedPoliciesContext";
 import Sidebar from "@/app/chat/Sidebar";
 import ChatWindow from "@/app/chat/ChatWindow";
 import ErrorMessage from "@/app/chat/ErrorMessage";
@@ -77,7 +78,9 @@ function ChatPage() {
 export default function Home() {
     return (
         <ChatContextProvider>
-            <ChatPage />
+            <SavedPoliciesProvider>
+                <ChatPage />
+            </SavedPoliciesProvider>
         </ChatContextProvider>
     )
 }
