@@ -6,7 +6,7 @@ import PolicyCalendar from "@/app/chat/PolicyCalendar";
 import UserDropdown from "@/app/UserDropdown";
 import { useSavedPolicies } from "@/contexts/SavedPoliciesContext";
 
-function ChatWindow({ messages = [], loading, input, onSend, onInputChange, onKeyDown, onSelectQuestion, title = "새 대화" }) {
+function ChatWindow({ messages = [], loading, input, attach, onSend, onInputChange, onKeyDown, onAttach, onRemoveAttach, onSelectQuestion, title = "새 대화" }) {
     const { enabled, count, openCalendar } = useSavedPolicies();
 
     return (
@@ -37,9 +37,12 @@ function ChatWindow({ messages = [], loading, input, onSend, onInputChange, onKe
             <ChatInput
                 input={input}
                 loading={loading}
+                attach={attach}
                 onSend={onSend}
                 onInputChange={onInputChange}
                 onKeyDown={onKeyDown}
+                onAttach={onAttach}
+                onRemoveAttach={onRemoveAttach}
             />
 
             <PolicyCalendar />

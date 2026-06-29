@@ -21,7 +21,7 @@ function MessageList({ messages = [], loading, onSelectQuestion }) {
         <div className="chat-messages">
             {messages.map((msg, i) =>
                 msg.role === "user"
-                    ? <UserMessage key={i} content={msg.content} />
+                    ? <UserMessage key={i} content={msg.content} image={msg.image} />
                     : <BotMessage
                         key={i}
                         content={msg.content}
