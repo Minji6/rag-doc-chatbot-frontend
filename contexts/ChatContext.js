@@ -132,8 +132,9 @@ export function ChatContextProvider({ children }) {
             setConversations(prev => upsertConversation(prev, newConvId, title))
             return true
         } catch (err) {
-            console.error(err)
-            const msg = err.response?.data?.detail ?? "서버 연결에 실패했습니다. 백엔드를 확인해주세요."
+            const serverDetail = err.response?.data?.detail ?? err.response?.data?.message
+            console.error("sendChat 실패:", err.response?.status, serverDetail ?? err.message)
+            const msg = serverDetail ?? "서버 연결에 실패했습니다. 백엔드를 확인해주세요."
             setError(msg)
             return false
         } finally {
