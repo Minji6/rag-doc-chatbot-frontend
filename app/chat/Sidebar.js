@@ -1,16 +1,31 @@
 "use client"
 
+import { useState } from "react"
 import Image from "next/image"
 
 function Sidebar({ conversations = [], activeId, onSelectChat, onNewChat, onDeleteChat }) {
+    const [logoOk, setLogoOk] = useState(true)
+
     return (
         <div className="sidebar">
             <button className="sidebar-logo" onClick={onNewChat}>
-                <Image src="/logo.png" alt="청포도" width={38} height={38} className="sidebar-logo-img" />
-                <div>
-                    <div className="sidebar-logo-title">청포도</div>
-                    <div className="sidebar-logo-sub">청년정책 AI 챗봇</div>
-                </div>
+                {logoOk ? (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img
+                        src="/letter-logo2.png"
+                        alt="청포도"
+                        className="sidebar-letter-logo"
+                        onError={() => setLogoOk(false)}
+                    />
+                ) : (
+                    <>
+                        <Image src="/cheongpodo-bot.png" alt="청포도" width={38} height={38} className="sidebar-logo-img" />
+                        <div>
+                            <div className="sidebar-logo-title">청포도</div>
+                            <div className="sidebar-logo-sub">청년정책 AI 챗봇</div>
+                        </div>
+                    </>
+                )}
             </button>
 
             <button className="btn new-chat-btn w-100" onClick={onNewChat}>
