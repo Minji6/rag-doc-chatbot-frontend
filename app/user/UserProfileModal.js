@@ -114,6 +114,10 @@ function UserProfileModal({ users = [], onSelectUser, onCreateUser, onDeleteUser
             toast.warn("생년월일을 입력해주세요.");
             return;
         }
+        if (new Date(form.birth_date) < new Date("1900-01-01")) {
+            toast.warn("생년월일은 1900년 이후여야 합니다.");
+            return;
+        }
         if (new Date(form.birth_date) > new Date()) {
             toast.warn("생년월일은 오늘 이후 날짜로 설정할 수 없습니다.");
             return;
