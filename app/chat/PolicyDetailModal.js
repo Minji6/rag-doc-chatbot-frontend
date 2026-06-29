@@ -1,5 +1,6 @@
 "use client"
 
+import { createPortal } from "react-dom";
 import { categoryStyle, getDdayInfo, formatApplyPeriod } from "@/utils/policy";
 
 /**
@@ -38,7 +39,12 @@ function PolicyDetailModal({ policy, onClose }) {
         ["세부 분야", sub_category],
     ].filter(([, value]) => value && String(value).trim());
 
-    return (
+    // 모달은 body로 포털링한다. 메시지 말풍선(.message-row.bot) 같은 flex/transform
+    // 컨테이너 안에서 렌더되면 position:fixed 기준이 뷰포트가 아니게 되어
+    // 오버레이가 화면 전체를 덮지 못하는 문제가 생길 수 있다.
+    if (typeof document === "undefined") return null;
+
+    return createPortal(
         <div className="modal-overlay" onClick={onClose}>
             <div className="policy-detail-modal" onClick={(e) => e.stopPropagation()}>
                 <div
@@ -88,7 +94,8 @@ function PolicyDetailModal({ policy, onClose }) {
                     )}
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 }
 
