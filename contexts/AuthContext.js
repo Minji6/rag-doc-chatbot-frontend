@@ -10,11 +10,19 @@ export function AuthContextProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null)
 
   const refreshUsers = useCallback(async () => {
-    try {
-      const res = await memberApi.getUsers()
-      setUsers(res.data)
-    } catch (err) {
-      console.error("유저 목록 조회 실패", err)
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        const res = await memberApi.getUsers()
+        setUsers(res.data)
+        return
+      } catch (err) {
+        if (attempt === 2) {
+          console.error("유저 목록 조회 실패 (3회 시도)", err)
+          return
+        }
+        // DB cold start 대기: 1초 → 2초 간격으로 재시도
+        await new Promise(r => setTimeout(r, 1000 * (attempt + 1)))
+      }
     }
   }, [])
 

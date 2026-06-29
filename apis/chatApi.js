@@ -6,13 +6,9 @@ function sendChat(message, conversation_id, role = "guest", user_id = null, atta
     formData.append("message", message);
     formData.append("conversation_id", conversation_id);
     formData.append("role", role);
-    if (user_id !== null) {
-        formData.append("user_id", user_id);
-    }
-    if (attach) {
-        // 백엔드 /api/chat/service 는 multipart의 attach(UploadFile)로 이미지를 받는다
-        formData.append("attach", attach);
-    }
+    if (user_id !== null) formData.append("user_id", user_id);
+    // 백엔드 /api/chat/service 는 multipart의 attach(UploadFile)로 이미지를 받는다
+    if (attach) formData.append("attach", attach);
     return axios.post("/api/chat/service", formData);
 }
 
@@ -35,9 +31,4 @@ function clearHistory(conversation_id, role = "guest", user_id = null) {
     return axios.delete("/chat_history/clear-history", { params });
 }
 
-export default {
-    sendChat,
-    getHistory,
-    getConversations,
-    clearHistory,
-};
+export default { sendChat, getHistory, getConversations, clearHistory };

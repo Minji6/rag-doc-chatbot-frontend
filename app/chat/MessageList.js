@@ -28,6 +28,8 @@ function MessageList({ messages = [], loading, onSelectQuestion }) {
                         category={msg.category}
                         inquiry_type={msg.inquiry_type}
                         policies={msg.policies}
+                        suggestions={msg.suggestions}
+                        onSelectQuestion={onSelectQuestion}
                     />
             )}
             {loading && <TypingIndicator />}

@@ -18,14 +18,16 @@ function revokeMessageImages(messages) {
 export function ChatContextProvider({ children }) {
     const { currentUser } = useAuth()
 
-    const [conversations, setConversations]     = useState([])
-    const [conversationId, setConversationId]   = useState(() => crypto.randomUUID())
-    const [messages, setMessages]               = useState([])
-    const [loading, setLoading]                 = useState(false)
+    const [conversations, setConversations]   = useState([])
+    const [conversationId, setConversationId] = useState(() => crypto.randomUUID())
+    const [messages, setMessages]             = useState([])
+    const [loading, setLoading]               = useState(false)
+    const [error, setError]                   = useState(null)
 
     const handleNewChat = useCallback(() => {
         setMessages(prev => { revokeMessageImages(prev); return [] })
         setConversationId(crypto.randomUUID())
+        setError(null)
     }, [])
 
     // 언마운트 시 남아있는 첨부 미리보기 URL 정리
@@ -47,10 +49,10 @@ export function ChatContextProvider({ children }) {
         handleNewChat()
     }, [currentUser?.user_id, handleNewChat])
 
-    // 사이드바에서 대화방 선택 시 히스토리 로드
     const handleSelectChat = useCallback(async (selectedConversationId) => {
         if (!currentUser) return
         setConversationId(selectedConversationId)
+        setError(null)
         try {
             const res = await chatApi.getHistory(
                 selectedConversationId, "user", String(currentUser.user_id)
@@ -62,6 +64,7 @@ export function ChatContextProvider({ children }) {
             setMessages(prev => { revokeMessageImages(prev); return loaded })
         } catch (err) {
             console.error("대화 기록 로드 실패", err)
+            setError("대화 기록을 불러오지 못했습니다.")
         }
     }, [currentUser])
 
@@ -80,20 +83,22 @@ export function ChatContextProvider({ children }) {
 
         setMessages(prev => [...prev, { role: "user", content: text.trim(), image: imagePreview }])
         setLoading(true)
+        setError(null)
 
         try {
             const res = await chatApi.sendChat(apiMessage, conversationId, role, userId, attach)
-            const newConvId = res.data.conversation_id
+            const data = res.data
+            const newConvId = data.conversation_id
             setConversationId(newConvId)
             setMessages(prev => [...prev, {
                 role:         "bot",
-                content:      res.data.message,
-                category:     res.data.category     ?? [],
-                inquiry_type: res.data.inquiry_type ?? "",
-                policies:     res.data.policies     ?? [],
+                content:      data.message,
+                category:     data.category     ?? [],
+                inquiry_type: data.inquiry_type ?? "",
+                policies:     data.policies     ?? [],
+                suggestions:  data.suggestions  ?? [],
             }])
 
-            // user인 경우 대화 목록 갱신 (새 대화라면 추가 — title은 백엔드 생성 후 다음 조회 시 반영)
             if (currentUser) {
                 setConversations(prev => {
                     const exists = prev.some(c => c.conversation_id === newConvId)
@@ -104,10 +109,8 @@ export function ChatContextProvider({ children }) {
             return true
         } catch (err) {
             console.error(err)
-            setMessages(prev => [...prev, {
-                role: "bot",
-                content: "서버 연결에 실패했습니다. 백엔드를 확인해주세요.",
-            }])
+            const msg = err.response?.data?.detail ?? "서버 연결에 실패했습니다. 백엔드를 확인해주세요."
+            setError(msg)
             return false
         } finally {
             setLoading(false)
@@ -125,16 +128,20 @@ export function ChatContextProvider({ children }) {
         }
     }, [currentUser, conversationId, handleNewChat])
 
+    const clearError = useCallback(() => setError(null), [])
+
     return (
         <ChatContext.Provider value={{
             conversations,
             conversationId,
             messages,
             loading,
+            error,
             handleNewChat,
             handleSelectChat,
             handleSend,
             handleDeleteChat,
+            clearError,
         }}>
             {children}
         </ChatContext.Provider>

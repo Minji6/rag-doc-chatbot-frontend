@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import { useAuth } from "@/contexts/AuthContext"
 
 const CATEGORY_TILES = [
@@ -54,11 +55,12 @@ function EmptyState({ onSelectQuestion }) {
     return (
         <div className="empty-state">
             <div className="empty-state-hero">
-                <img
-                    src="/cheongpodo.png"
+                <Image
+                    src="/cheongpodo-bot.png"
                     alt="청포도"
+                    width={88}
+                    height={88}
                     className="empty-state-character"
-                    onError={e => { e.target.style.display = "none"; }}
                 />
                 <h2 className="empty-state-title">안녕하세요, {name}님</h2>
                 <p className="empty-state-desc">

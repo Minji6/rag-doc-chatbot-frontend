@@ -1,11 +1,13 @@
 "use client"
 
 import { useState } from "react";
-import { useChat } from "@/contexts/ChatContext";
+import { ChatContextProvider, useChat } from "@/contexts/ChatContext";
+import { SavedPoliciesProvider } from "@/contexts/SavedPoliciesContext";
 import Sidebar from "@/app/chat/Sidebar";
 import ChatWindow from "@/app/chat/ChatWindow";
+import ErrorMessage from "@/app/chat/ErrorMessage";
 
-function Home() {
+function ChatPage() {
     const {
         conversations,
         conversationId,
@@ -69,6 +71,7 @@ function Home() {
                 onDeleteChat={handleDeleteChat}
             />
             <div className="main-content">
+                <ErrorMessage />
                 <ChatWindow
                     messages={messages}
                     loading={loading}
@@ -87,4 +90,12 @@ function Home() {
     );
 }
 
-export default Home;
+export default function Home() {
+    return (
+        <ChatContextProvider>
+            <SavedPoliciesProvider>
+                <ChatPage />
+            </SavedPoliciesProvider>
+        </ChatContextProvider>
+    )
+}
