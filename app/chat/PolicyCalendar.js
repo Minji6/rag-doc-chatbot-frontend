@@ -65,7 +65,9 @@ function SavedPolicyItem({ policy, onRemove }) {
                     {dday.label}
                 </span>
             )}
-            <button className="calendar-policy-remove" onClick={() => onRemove(policy)}>✕</button>
+            <button className="calendar-policy-remove" onClick={() => onRemove(policy)}>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+            </button>
         </div>
     )
 }
@@ -115,13 +117,20 @@ function PolicyCalendar() {
             <aside className="calendar-panel" onClick={(e) => e.stopPropagation()}>
                 <header className="calendar-header">
                     <div className="calendar-header-title">
-                        <span className="calendar-header-icon">📅</span>
+                        <span className="calendar-header-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <rect x="3" y="4.5" width="18" height="16" rx="3"/>
+                                <path d="M3 9.5h18M8 2.5v4M16 2.5v4"/>
+                            </svg>
+                        </span>
                         <div>
                             <h3>정책 캘린더</h3>
                             <p>저장한 정책 마감일을 한눈에</p>
                         </div>
                     </div>
-                    <button className="modal-close-btn" onClick={closeCalendar}>✕</button>
+                    <button className="modal-close-btn" onClick={closeCalendar}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+                    </button>
                 </header>
 
                 <div className="calendar-tabs">
@@ -136,9 +145,13 @@ function PolicyCalendar() {
                 </div>
 
                 <div className="calendar-month-nav">
-                    <button onClick={() => moveMonth(-1)}>‹</button>
+                    <button onClick={() => moveMonth(-1)}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 6l-6 6 6 6"/></svg>
+                    </button>
                     <span>{year}년 {month + 1}월</span>
-                    <button onClick={() => moveMonth(1)}>›</button>
+                    <button onClick={() => moveMonth(1)}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+                    </button>
                 </div>
 
                 <div className="calendar-grid">

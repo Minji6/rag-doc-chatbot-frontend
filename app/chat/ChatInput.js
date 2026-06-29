@@ -44,7 +44,9 @@ function ChatInput({ input, loading, attach, onSend, onInputChange, onKeyDown, o
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={previewUrl} alt="첨부 미리보기" className="chat-attach-thumb" />
                     <span className="chat-attach-name">{attach.name}</span>
-                    <button className="chat-attach-remove" onClick={onRemoveAttach} aria-label="첨부 제거">✕</button>
+                    <button className="chat-attach-remove" onClick={onRemoveAttach} aria-label="첨부 제거">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+                    </button>
                 </div>
             )}
             <div className="chat-input-box">
@@ -61,7 +63,11 @@ function ChatInput({ input, loading, attach, onSend, onInputChange, onKeyDown, o
                     disabled={loading}
                     aria-label="이미지 첨부"
                 >
-                    🖼
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="3" y="3" width="18" height="18" rx="4"/>
+                        <circle cx="8.5" cy="8.5" r="1.6"/>
+                        <path d="M21 15l-5-5L5 21"/>
+                    </svg>
                 </button>
                 <input
                     type="text"
@@ -77,7 +83,9 @@ function ChatInput({ input, loading, attach, onSend, onInputChange, onKeyDown, o
                     onClick={onSend}
                     disabled={!canSend}
                 >
-                    ↑
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M12 19V5M5 12l7-7 7 7"/>
+                    </svg>
                 </button>
             </div>
             <p className="chat-input-disclaimer">

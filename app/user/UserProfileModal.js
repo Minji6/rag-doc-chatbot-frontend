@@ -145,7 +145,9 @@ function UserProfileModal({ users = [], onSelectUser, onCreateUser, onDeleteUser
             <div className="modal-container" onClick={(e) => e.stopPropagation()}>
                 <div className="modal-header">
                     <h3 className="modal-title">사용자 선택</h3>
-                    <button className="modal-close-btn" onClick={onClose}>✕</button>
+                    <button className="modal-close-btn" onClick={onClose}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+                    </button>
                 </div>
 
                 <div className="modal-tabs">
@@ -194,7 +196,9 @@ function UserProfileModal({ users = [], onSelectUser, onCreateUser, onDeleteUser
                                     className="modal-user-delete"
                                     style={{ visibility: user.user_id > 10 ? "visible" : "hidden" }}
                                     onClick={(e) => handleDeleteClick(e, user.user_id, user.nickname)}
-                                >✕</button>
+                                >
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+                            </button>
                             </div>
                         ))}
                     </div>

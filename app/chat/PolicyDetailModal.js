@@ -63,7 +63,9 @@ function PolicyDetailModal({ policy, onClose }) {
                         >
                             {category}
                         </span>
-                        <button className="modal-close-btn" onClick={onClose}>✕</button>
+                        <button className="modal-close-btn" onClick={onClose}>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+                        </button>
                     </div>
                     <h3 className="policy-detail-title">{plcyNm}</h3>
                     {dday && (
@@ -92,7 +94,10 @@ function PolicyDetailModal({ policy, onClose }) {
                                 openCalendar();
                             }}
                         >
-                            {saved ? "🔖 저장됨" : "🔖 저장"}
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill={saved ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/>
+                            </svg>
+                            {saved ? "저장됨" : "저장"}
                         </button>
                     )}
                     {url ? (
