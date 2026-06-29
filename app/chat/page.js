@@ -40,9 +40,16 @@ function Home() {
         const text = input.trim()
         if ((!text && !attach) || loading) return
         const sent = attach
+        // 입력값은 즉시 비우되 첨부 파일은 전송 성공 후에만 비운다.
+        // 텍스트 재입력은 쉽지만, 첨부는 파일 탐색기를 다시 열어야 하므로
+        // 전송 실패 시 선택했던 이미지를 잃지 않도록 보존한다.
         setInput("")
-        setAttach(null)
-        await handleSend(text, sent)
+        const ok = await handleSend(text, sent)
+        if (ok) {
+            setAttach(null)
+        } else {
+            setInput(text) // 실패 시 텍스트·첨부 모두 복원
+        }
     }
 
     const onKeyDown = (e) => {

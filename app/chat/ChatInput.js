@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef } from "react";
+import { useRef, useMemo, useEffect } from "react";
 
 const MAX_IMAGE_BYTES = 10 * 1024 * 1024; // 백엔드(10MB) 제한과 일치 — 업로드 전 빠른 실패
 
@@ -22,6 +22,18 @@ function ChatInput({ input, loading, attach, onSend, onInputChange, onKeyDown, o
         onAttach(file);
     };
 
+    // 미리보기 blob URL은 attach가 바뀔 때만 생성하고, 교체/언마운트 시 해제한다.
+    // (JSX에서 직접 createObjectURL을 호출하면 리렌더마다 URL이 쌓여 메모리 누수.)
+    const previewUrl = useMemo(
+        () => (attach ? URL.createObjectURL(attach) : null),
+        [attach]
+    );
+    useEffect(() => {
+        return () => {
+            if (previewUrl) URL.revokeObjectURL(previewUrl);
+        };
+    }, [previewUrl]);
+
     // 텍스트·이미지 둘 다 없으면 전송 불가
     const canSend = !loading && (input.trim() || attach);
 
@@ -30,7 +42,7 @@ function ChatInput({ input, loading, attach, onSend, onInputChange, onKeyDown, o
             {attach && (
                 <div className="chat-attach-preview">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={URL.createObjectURL(attach)} alt="첨부 미리보기" className="chat-attach-thumb" />
+                    <img src={previewUrl} alt="첨부 미리보기" className="chat-attach-thumb" />
                     <span className="chat-attach-name">{attach.name}</span>
                     <button className="chat-attach-remove" onClick={onRemoveAttach} aria-label="첨부 제거">✕</button>
                 </div>

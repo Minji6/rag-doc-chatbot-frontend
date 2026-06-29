@@ -6,6 +6,15 @@ import chatApi from "@/apis/chatApi"
 
 const ChatContext = createContext(null)
 
+/** 메시지 목록에 들어있는 첨부 미리보기 blob URL을 해제한다. */
+function revokeMessageImages(messages) {
+    messages.forEach(m => {
+        if (typeof m.image === "string" && m.image.startsWith("blob:")) {
+            URL.revokeObjectURL(m.image)
+        }
+    })
+}
+
 export function ChatContextProvider({ children }) {
     const { currentUser } = useAuth()
 
@@ -15,8 +24,13 @@ export function ChatContextProvider({ children }) {
     const [loading, setLoading]                 = useState(false)
 
     const handleNewChat = useCallback(() => {
-        setMessages([])
+        setMessages(prev => { revokeMessageImages(prev); return [] })
         setConversationId(crypto.randomUUID())
+    }, [])
+
+    // 언마운트 시 남아있는 첨부 미리보기 URL 정리
+    useEffect(() => {
+        return () => setMessages(prev => { revokeMessageImages(prev); return prev })
     }, [])
 
     // currentUser가 바뀌면 대화 목록 새로 로드
@@ -45,15 +59,16 @@ export function ChatContextProvider({ children }) {
                 role: m.role === "human" ? "user" : "bot",
                 content: m.content,
             }))
-            setMessages(loaded)
+            setMessages(prev => { revokeMessageImages(prev); return loaded })
         } catch (err) {
             console.error("대화 기록 로드 실패", err)
         }
     }, [currentUser])
 
+    // 전송 성공 여부(boolean)를 반환한다 — 호출부가 실패 시 입력/첨부를 복원할 수 있도록.
     const handleSend = useCallback(async (text, attach = null) => {
         // 텍스트가 비어도 이미지가 있으면 전송 허용 (이미지 단독 질의)
-        if ((!text.trim() && !attach) || loading) return
+        if ((!text.trim() && !attach) || loading) return false
 
         const role   = currentUser ? "user" : "guest"
         const userId = currentUser ? String(currentUser.user_id) : null
@@ -86,12 +101,14 @@ export function ChatContextProvider({ children }) {
                     return [{ conversation_id: newConvId }, ...prev]
                 })
             }
+            return true
         } catch (err) {
             console.error(err)
             setMessages(prev => [...prev, {
                 role: "bot",
                 content: "서버 연결에 실패했습니다. 백엔드를 확인해주세요.",
             }])
+            return false
         } finally {
             setLoading(false)
         }
