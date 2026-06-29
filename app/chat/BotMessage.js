@@ -18,12 +18,15 @@ function stripEmbeddedSuggestions(text) {
     return (text ?? "").replace(/---SUGGESTIONS---[\s\S]*$/m, "").trimEnd();
 }
 
-function BotMessage({ content, category = [], inquiry_type = "", policies = [], suggestions = [], onSelectQuestion }) {
+function BotMessage({ content, category = [], inquiry_type = [], policies = [], suggestions = [], onSelectQuestion }) {
     const { currentUser } = useAuth();
     // 상세 모달은 BotMessage가 소유한다 — 각 답변 메시지가 독립적으로 모달 상태를 가진다.
     const [selectedPolicy, setSelectedPolicy] = useState(null);
 
-    const hasAnalysis = category.length > 0 || inquiry_type;
+    const types = Array.isArray(inquiry_type) ? inquiry_type : (inquiry_type ? [inquiry_type] : []);
+    const isDetail = types.includes("상세조회");
+
+    const hasAnalysis = category.length > 0 || types.length > 0;
     const cleanContent = stripEmbeddedSuggestions(content);
 
     return (
@@ -53,20 +56,20 @@ function BotMessage({ content, category = [], inquiry_type = "", policies = [], 
                                 </span>
                             );
                         })}
-                        {inquiry_type && (
-                            <span className="analysis-badge intent">의도 {inquiry_type}</span>
+                        {types.length > 0 && (
+                            <span className="analysis-badge intent">의도 {types.join(", ")}</span>
                         )}
                     </div>
                 )}
 
                 {/* 상세조회는 카드가 답변 역할을 하므로 텍스트를 숨긴다. */}
-                {inquiry_type !== "상세조회" && (
+                {!isDetail && (
                     <ReactMarkdown remarkPlugins={[remarkGfm]}>{cleanContent}</ReactMarkdown>
                 )}
 
                 {/* 상세조회 의도일 때만 정책 카드를 렌더한다.
                     추천·검색·비교는 텍스트 답변만 표시. */}
-                {inquiry_type === "상세조회" && (
+                {isDetail && (
                     <PolicyResultList
                         policies={policies}
                         onSelectPolicy={currentUser ? setSelectedPolicy : undefined}
