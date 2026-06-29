@@ -1,3 +1,4 @@
+import Image from "next/image";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import PolicyCard from "@/app/chat/PolicyCard";
@@ -15,12 +16,12 @@ function BotMessage({ content, category = [], inquiry_type = "", policies = [] }
     return (
         <div className="message-row bot">
             <div className="avatar bot">
-                <img
+                <Image
                     src="/cheongpodo-bot.png"
                     alt="청포도"
-                    onError={e => {
-                        e.target.parentElement.textContent = "🤖";
-                    }}
+                    width={38}
+                    height={38}
+                    className="avatar bot"
                 />
             </div>
             <div className="message-bubble bot">
