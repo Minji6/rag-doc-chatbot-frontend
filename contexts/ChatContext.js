@@ -43,13 +43,17 @@ export function ChatContextProvider({ children }) {
         return () => setMessages(prev => { revokeMessageImages(prev); return prev })
     }, [])
 
-    // currentUser가 바뀌면 대화 목록 새로 로드.
-    // 게스트는 백엔드가 InMemorySaver(휘발성)로 설계 → 목록 없음(새로고침 시 소멸).
+    // currentUser가 바뀌면(로그인/로그아웃) 대화 목록을 새로 로드한다.
+    // 게스트는 백엔드가 InMemorySaver(휘발성)로 설계 → 영속 목록이 없으므로,
+    //   사이드바 목록을 이 React state(conversations)에만 들고 있는다.
+    //   세션 중에는 유지되고, 새로고침하면 state가 초기화되어 자연히 사라진다(설계 의도와 일치).
     // 유저는 백엔드 목록(conversation_id)에 캐시된 제목을 보강한다.
     useEffect(() => {
         let cancelled = false
         handleNewChat()
         if (!currentUser) {
+            // 로그아웃 직후엔 직전 유저의 목록을 비운다.
+            // (게스트 세션 중 쌓인 목록은 currentUser가 계속 없으므로 이 effect가 다시 돌지 않아 보존된다.)
             setConversations([])
             return
         }
@@ -64,16 +68,17 @@ export function ChatContextProvider({ children }) {
     // 다른 대화의 메시지를 덮어쓰지 않도록, 응답 반영 전에 이 값과 대조한다.
     const latestSelectRef = useRef(null)
 
-    // 사이드바에서 대화방 선택 시 히스토리 로드 (유저 전용 — 게스트는 목록 자체가 없음).
+    // 사이드바에서 대화방 선택 시 히스토리 로드.
+    // 게스트도 백엔드가 conversation_id로 get-history를 지원하므로 동일하게 동작한다
+    // (서버 메모리가 살아있는 동안만 — 세션 중 선택/복원 용도).
     const handleSelectChat = useCallback(async (selectedConversationId) => {
-        if (!currentUser) return
         latestSelectRef.current = selectedConversationId
         setConversationId(selectedConversationId)
         setError(null)
+        const role   = currentUser ? "user" : "guest"
+        const userId = currentUser ? String(currentUser.user_id) : null
         try {
-            const res = await chatApi.getHistory(
-                selectedConversationId, "user", String(currentUser.user_id)
-            )
+            const res = await chatApi.getHistory(selectedConversationId, role, userId)
             // 그 사이 다른 대화방을 선택했다면 이 응답은 버린다.
             if (latestSelectRef.current !== selectedConversationId) return
             const loaded = res.data.messages.map(m => ({
@@ -118,12 +123,13 @@ export function ChatContextProvider({ children }) {
                 suggestions:  data.suggestions  ?? [],
             }])
 
-            // 유저만 사이드바 목록·제목을 갱신. 게스트는 휘발성이라 목록을 만들지 않는다.
+            // 사이드바 목록을 갱신한다. 게스트도 React state(인메모리)에는 쌓아
+            // 세션 중 사이드바에 노출하되, 제목 캐시(localStorage)는 유저만 영속화한다.
+            const title = deriveTitle(text)
             if (currentUser) {
-                const title = deriveTitle(text)
                 rememberTitle(currentUser.user_id, newConvId, title)
-                setConversations(prev => upsertConversation(prev, newConvId, title))
             }
+            setConversations(prev => upsertConversation(prev, newConvId, title))
             return true
         } catch (err) {
             console.error(err)
@@ -136,10 +142,11 @@ export function ChatContextProvider({ children }) {
     }, [currentUser, conversationId, loading])
 
     const handleDeleteChat = useCallback(async (targetConversationId) => {
-        if (!currentUser) return
+        const role   = currentUser ? "user" : "guest"
+        const userId = currentUser ? String(currentUser.user_id) : null
         try {
-            await chatApi.clearHistory(targetConversationId, "user", String(currentUser.user_id))
-            forgetTitle(currentUser.user_id, targetConversationId)
+            await chatApi.clearHistory(targetConversationId, role, userId)
+            if (currentUser) forgetTitle(currentUser.user_id, targetConversationId)
             setConversations(prev => prev.filter(c => c.conversation_id !== targetConversationId))
             if (conversationId === targetConversationId) handleNewChat()
         } catch (err) {

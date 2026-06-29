@@ -8,8 +8,9 @@
  * 그래야 계정 삭제 시 해당 유저의 제목 캐시를 통째로 비울 수 있고(잔류 방지),
  * 한 객체에 모든 유저의 항목이 뒤섞이지 않는다.
  *
- * 주의: 게스트 히스토리는 백엔드가 InMemorySaver(휘발성)로 설계했으므로
- * 의도적으로 영속화하지 않는다. 여기서도 게스트 대화는 저장하지 않는다.
+ * 주의: 게스트 사이드바 목록·제목은 ChatContext의 React state(인메모리)에만 둔다.
+ * 백엔드가 게스트를 InMemorySaver(휘발성)로 설계했으므로, 여기(localStorage)에는
+ * 게스트 제목을 의도적으로 영속화하지 않는다 — 새로고침 시 함께 사라져야 한다.
  */
 import { loadJSON, saveJSON, removeKey } from "@/utils/storage";
 
