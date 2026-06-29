@@ -2,6 +2,7 @@
 
 import { createPortal } from "react-dom";
 import { categoryStyle, getDdayInfo, formatApplyPeriod } from "@/utils/policy";
+import { useSavedPolicies } from "@/contexts/SavedPoliciesContext";
 
 /**
  * 정책 상세 모달 (로그인 유저가 카드의 "자세히 보기"를 눌렀을 때).
@@ -11,7 +12,11 @@ import { categoryStyle, getDdayInfo, formatApplyPeriod } from "@/utils/policy";
  * 값이 없는 섹션은 통째로 숨겨 빈 라벨이 노출되지 않는다.
  */
 function PolicyDetailModal({ policy, onClose }) {
+    const { enabled, isSaved, toggle, openCalendar } = useSavedPolicies();
+
     if (!policy) return null;
+
+    const saved = enabled && isSaved(policy);
 
     const {
         plcyNm,           // 정책명
@@ -78,6 +83,18 @@ function PolicyDetailModal({ policy, onClose }) {
                 </div>
 
                 <div className="policy-detail-footer">
+                    {enabled && (
+                        // 저장: 캘린더에 담고 패널을 연다. 이미 담겼으면 캘린더만 연다.
+                        <button
+                            className={`policy-detail-save-btn ${saved ? "saved" : ""}`}
+                            onClick={() => {
+                                if (!saved) toggle(policy);
+                                openCalendar();
+                            }}
+                        >
+                            {saved ? "🔖 저장됨" : "🔖 저장"}
+                        </button>
+                    )}
                     {url ? (
                         <a
                             href={url}
