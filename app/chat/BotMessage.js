@@ -10,12 +10,12 @@ import { CATEGORY_STYLE } from "@/utils/policy";
 import PolicyResultList from "@/app/chat/PolicyResultList";
 import PolicyDetailModal from "@/app/chat/PolicyDetailModal";
 
-// LLM이 separator 없이 suggestions JSON을 본문에 포함했을 때 제거
+// LLM이 본문 뒤에 suggestions를 덧붙였을 때 제거.
+// separator(---SUGGESTIONS---) 기준으로만 잘라낸다. 과거엔 JSON 배열 패턴까지
+// 휴리스틱으로 제거했으나, 본문에 포함된 코드 예시·일반 텍스트의 대괄호 배열을
+// 오인해 정상 답변을 무음 삭제하는 위험이 있어 separator 기반으로 한정한다.
 function stripEmbeddedSuggestions(text) {
-    return text
-        .replace(/---SUGGESTIONS---[\s\S]*$/m, "")  // separator 이후 전체
-        .replace(/\[["'].*["']\s*,[\s\S]*?\]/m, "") // JSON 배열 패턴
-        .trimEnd();
+    return (text ?? "").replace(/---SUGGESTIONS---[\s\S]*$/m, "").trimEnd();
 }
 
 function BotMessage({ content, category = [], inquiry_type = "", policies = [], suggestions = [], onSelectQuestion }) {
