@@ -23,7 +23,12 @@ function BotMessage({ content, category = [], inquiry_type = "", policies = [], 
     // 상세 모달은 BotMessage가 소유한다 — 각 답변 메시지가 독립적으로 모달 상태를 가진다.
     const [selectedPolicy, setSelectedPolicy] = useState(null);
 
-    const hasAnalysis = category.length > 0 || inquiry_type;
+    // 백엔드가 inquiry_type을 배열로 반환하므로 배열/문자열 모두 처리
+    const types = Array.isArray(inquiry_type) ? inquiry_type : inquiry_type ? [inquiry_type] : [];
+    const isDetailOnly = types.length === 1 && types[0] === "상세조회";
+    const typeLabel = types.join(" · ");
+
+    const hasAnalysis = category.length > 0 || types.length > 0;
     const cleanContent = stripEmbeddedSuggestions(content);
 
     return (
@@ -53,20 +58,20 @@ function BotMessage({ content, category = [], inquiry_type = "", policies = [], 
                                 </span>
                             );
                         })}
-                        {inquiry_type && (
-                            <span className="analysis-badge intent">의도 {inquiry_type}</span>
+                        {typeLabel && (
+                            <span className="analysis-badge intent">의도 {typeLabel}</span>
                         )}
                     </div>
                 )}
 
                 {/* 상세조회는 카드가 답변 역할을 하므로 텍스트를 숨긴다. */}
-                {inquiry_type !== "상세조회" && (
+                {!isDetailOnly && (
                     <ReactMarkdown remarkPlugins={[remarkGfm]}>{cleanContent}</ReactMarkdown>
                 )}
 
                 {/* 상세조회 의도일 때만 정책 카드를 렌더한다.
                     추천·검색·비교는 텍스트 답변만 표시. */}
-                {inquiry_type === "상세조회" && (
+                {isDetailOnly && (
                     <PolicyResultList
                         policies={policies}
                         onSelectPolicy={currentUser ? setSelectedPolicy : undefined}
