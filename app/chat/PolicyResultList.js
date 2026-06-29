@@ -18,6 +18,7 @@ function PolicyResultList({ policies = [], onSelectPolicy }) {
                 <PolicyCard
                     key={policy.plcyNo ?? i}
                     policy={policy}
+                    index={i}
                     onDetail={onSelectPolicy}
                 />
             ))}

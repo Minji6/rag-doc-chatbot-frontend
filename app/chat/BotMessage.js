@@ -59,14 +59,19 @@ function BotMessage({ content, category = [], inquiry_type = "", policies = [], 
                     </div>
                 )}
 
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>{cleanContent}</ReactMarkdown>
+                {/* 상세조회는 카드가 답변 역할을 하므로 텍스트를 숨긴다. */}
+                {inquiry_type !== "상세조회" && (
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{cleanContent}</ReactMarkdown>
+                )}
 
-                {/* 정책 카드 목록 — 로그인 유저에게만 상세 모달 진입점(onSelectPolicy)을 준다.
-                    게스트는 콜백을 받지 못해 카드가 외부 신청 URL로 직접 연결된다. */}
-                <PolicyResultList
-                    policies={policies}
-                    onSelectPolicy={currentUser ? setSelectedPolicy : undefined}
-                />
+                {/* 상세조회 의도일 때만 정책 카드를 렌더한다.
+                    추천·검색·비교는 텍스트 답변만 표시. */}
+                {inquiry_type === "상세조회" && (
+                    <PolicyResultList
+                        policies={policies}
+                        onSelectPolicy={currentUser ? setSelectedPolicy : undefined}
+                    />
+                )}
 
                 {suggestions.length > 0 && (
                     <div className="suggestions-row">
