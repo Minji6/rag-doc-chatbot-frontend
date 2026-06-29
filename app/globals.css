@@ -386,7 +386,7 @@ body {
 .policy-card-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
   margin-top: 12px;
 }
 
@@ -398,84 +398,97 @@ body {
   max-width: 480px;
 }
 
-.policy-card-top {
+/* 번호 + 정책명 + D-day 배지 인라인 행 */
+.policy-card-title-row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 6px;
   margin-bottom: 8px;
 }
 
-.policy-card-category {
-  display: inline-flex;
-  align-items: center;
-  padding: 3px 9px;
-  border-radius: 20px;
-  font-size: 11px;
-  font-weight: 600;
-}
-
-.policy-card-dday {
-  font-size: 12px;
+.policy-card-number {
+  font-size: 14px;
   font-weight: 700;
-  color: var(--dday-urgent);
-}
-
-.policy-card-dday.always-open {
   color: var(--text-muted);
+  flex-shrink: 0;
 }
 
-.policy-card-title {
+.policy-card-name {
   font-size: 15px;
   font-weight: 700;
   color: var(--text);
-  margin-bottom: 2px;
+  flex: 1;
+  min-width: 0;
 }
 
-.policy-card-org {
-  font-size: 12px;
+/* D-day 배지: 긴급도별 색상 칩 */
+.policy-card-dday {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  background: var(--dday-urgent);
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.policy-card-dday.always-open {
+  background: var(--surface-sub);
   color: var(--text-muted);
-  margin-bottom: 8px;
 }
 
+/* 정책 설명 (1~2줄) */
 .policy-card-desc {
   font-size: 13px;
   color: var(--text);
   line-height: 1.6;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 
-.policy-card-tags {
+/* 키-값 필드 영역 */
+.policy-card-fields {
+  border-top: 1px solid var(--border);
+  padding-top: 10px;
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 6px;
   margin-bottom: 12px;
 }
 
-.policy-card-tag {
-  padding: 3px 10px;
-  background-color: var(--surface-sub);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  font-size: 11px;
-  color: var(--text-muted);
+.policy-card-field-row {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
 }
 
+.policy-card-field-label {
+  min-width: 56px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.policy-card-field-value {
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.5;
+  flex: 1;
+}
+
+/* 모달 진입 버튼 행 */
 .policy-card-footer {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   border-top: 1px solid var(--border);
   padding-top: 10px;
 }
 
-.policy-card-benefit {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--primary);
-}
-
 .policy-card-link {
-  /* <a>·<button>·<span> 어느 태그로 렌더되든 동일하게 보이도록 버튼 기본 스타일 리셋 */
   background: none;
   border: none;
   padding: 0;
@@ -489,6 +502,16 @@ body {
 
 .policy-card-link:hover {
   color: var(--primary);
+}
+
+/* 모달 내부에서도 쓰는 카테고리 배지 (PolicyDetailModal) */
+.policy-card-category {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
 }
 
 /* ============================================================
