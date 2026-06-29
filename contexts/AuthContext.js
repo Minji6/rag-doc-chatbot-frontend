@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, useCallback } from "react"
 import memberApi from "@/apis/memberApi"
+import { forgetUserTitles } from "@/utils/conversationStore"
 
 const AuthContext = createContext(null)
 
@@ -30,6 +31,7 @@ export function AuthContextProvider({ children }) {
 
   const deleteUser = useCallback(async (userId) => {
     await memberApi.deleteUser(userId)
+    forgetUserTitles(userId) // 계정 삭제 시 제목 캐시 잔류 방지
     setUsers(prev => prev.filter(u => u.user_id !== userId))
     setCurrentUser(prev => prev?.user_id === userId ? null : prev)
   }, [])

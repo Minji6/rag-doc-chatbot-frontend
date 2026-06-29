@@ -28,7 +28,7 @@ function Sidebar({ conversations = [], activeId, onSelectChat, onNewChat, onDele
                             onClick={() => onSelectChat(c.conversation_id)}
                         >
                             <span className="sidebar-chat-title">
-                                {c.conversation_id.slice(0, 18)}…
+                                {c.title || "새 대화"}
                             </span>
                             <button
                                 className="sidebar-chat-delete-btn"
