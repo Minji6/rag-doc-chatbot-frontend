@@ -14,17 +14,33 @@ function upsertConversation(conversations, conversationId, title) {
     return [{ conversation_id: conversationId, title: existing?.title ?? title }, ...rest]
 }
 
+/** 메시지 목록에 들어있는 첨부 미리보기 blob URL을 해제한다. */
+function revokeMessageImages(messages) {
+    messages.forEach(m => {
+        if (typeof m.image === "string" && m.image.startsWith("blob:")) {
+            URL.revokeObjectURL(m.image)
+        }
+    })
+}
+
 export function ChatContextProvider({ children }) {
     const { currentUser } = useAuth()
 
-    const [conversations, setConversations]     = useState([])
-    const [conversationId, setConversationId]   = useState(() => crypto.randomUUID())
-    const [messages, setMessages]               = useState([])
-    const [loading, setLoading]                 = useState(false)
+    const [conversations, setConversations]   = useState([])
+    const [conversationId, setConversationId] = useState(() => crypto.randomUUID())
+    const [messages, setMessages]             = useState([])
+    const [loading, setLoading]               = useState(false)
+    const [error, setError]                   = useState(null)
 
     const handleNewChat = useCallback(() => {
-        setMessages([])
+        setMessages(prev => { revokeMessageImages(prev); return [] })
         setConversationId(crypto.randomUUID())
+        setError(null)
+    }, [])
+
+    // 언마운트 시 남아있는 첨부 미리보기 URL 정리
+    useEffect(() => {
+        return () => setMessages(prev => { revokeMessageImages(prev); return prev })
     }, [])
 
     // currentUser가 바뀌면 대화 목록 새로 로드.
@@ -53,6 +69,7 @@ export function ChatContextProvider({ children }) {
         if (!currentUser) return
         latestSelectRef.current = selectedConversationId
         setConversationId(selectedConversationId)
+        setError(null)
         try {
             const res = await chatApi.getHistory(
                 selectedConversationId, "user", String(currentUser.user_id)
@@ -63,31 +80,42 @@ export function ChatContextProvider({ children }) {
                 role: m.role === "human" ? "user" : "bot",
                 content: m.content,
             }))
-            setMessages(loaded)
+            setMessages(prev => { revokeMessageImages(prev); return loaded })
         } catch (err) {
             console.error("대화 기록 로드 실패", err)
+            setError("대화 기록을 불러오지 못했습니다.")
         }
     }, [currentUser])
 
-    const handleSend = useCallback(async (text) => {
-        if (!text.trim() || loading) return
+    // 전송 성공 여부(boolean)를 반환한다 — 호출부가 실패 시 입력/첨부를 복원할 수 있도록.
+    const handleSend = useCallback(async (text, attach = null) => {
+        // 텍스트가 비어도 이미지가 있으면 전송 허용 (이미지 단독 질의)
+        if ((!text.trim() && !attach) || loading) return false
 
         const role   = currentUser ? "user" : "guest"
         const userId = currentUser ? String(currentUser.user_id) : null
 
-        setMessages(prev => [...prev, { role: "user", content: text }])
+        // 이미지만 보낼 때도 백엔드 분석이 동작하도록 기본 질의를 채운다
+        const apiMessage = text.trim() || "첨부한 이미지를 분석해 주세요"
+        // 유저 말풍선에 보여줄 첨부 미리보기 (브라우저 메모리 URL)
+        const imagePreview = attach ? URL.createObjectURL(attach) : null
+
+        setMessages(prev => [...prev, { role: "user", content: text.trim(), image: imagePreview }])
         setLoading(true)
+        setError(null)
 
         try {
-            const res = await chatApi.sendChat(text, conversationId, role, userId)
-            const newConvId = res.data.conversation_id
+            const res = await chatApi.sendChat(apiMessage, conversationId, role, userId, attach)
+            const data = res.data
+            const newConvId = data.conversation_id
             setConversationId(newConvId)
             setMessages(prev => [...prev, {
                 role:         "bot",
-                content:      res.data.message,
-                category:     res.data.category     ?? [],
-                inquiry_type: res.data.inquiry_type ?? "",
-                policies:     res.data.policies     ?? [],
+                content:      data.message,
+                category:     data.category     ?? [],
+                inquiry_type: data.inquiry_type ?? "",
+                policies:     data.policies     ?? [],
+                suggestions:  data.suggestions  ?? [],
             }])
 
             // 유저만 사이드바 목록·제목을 갱신. 게스트는 휘발성이라 목록을 만들지 않는다.
@@ -96,12 +124,12 @@ export function ChatContextProvider({ children }) {
                 rememberTitle(currentUser.user_id, newConvId, title)
                 setConversations(prev => upsertConversation(prev, newConvId, title))
             }
+            return true
         } catch (err) {
             console.error(err)
-            setMessages(prev => [...prev, {
-                role: "bot",
-                content: "서버 연결에 실패했습니다. 백엔드를 확인해주세요.",
-            }])
+            const msg = err.response?.data?.detail ?? "서버 연결에 실패했습니다. 백엔드를 확인해주세요."
+            setError(msg)
+            return false
         } finally {
             setLoading(false)
         }
@@ -119,16 +147,20 @@ export function ChatContextProvider({ children }) {
         }
     }, [currentUser, conversationId, handleNewChat])
 
+    const clearError = useCallback(() => setError(null), [])
+
     return (
         <ChatContext.Provider value={{
             conversations,
             conversationId,
             messages,
             loading,
+            error,
             handleNewChat,
             handleSelectChat,
             handleSend,
             handleDeleteChat,
+            clearError,
         }}>
             {children}
         </ChatContext.Provider>

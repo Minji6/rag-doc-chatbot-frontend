@@ -21,13 +21,15 @@ function MessageList({ messages = [], loading, onSelectQuestion }) {
         <div className="chat-messages">
             {messages.map((msg, i) =>
                 msg.role === "user"
-                    ? <UserMessage key={i} content={msg.content} />
+                    ? <UserMessage key={i} content={msg.content} image={msg.image} />
                     : <BotMessage
                         key={i}
                         content={msg.content}
                         category={msg.category}
                         inquiry_type={msg.inquiry_type}
                         policies={msg.policies}
+                        suggestions={msg.suggestions}
+                        onSelectQuestion={onSelectQuestion}
                     />
             )}
             {loading && <TypingIndicator />}

@@ -1,14 +1,14 @@
 import axios from "axios";
 
-// 챗봇 메시지 전송
-function sendChat(message, conversation_id, role = "guest", user_id = null) {
+// 챗봇 메시지 전송 (attach: 첨부 이미지 File, 선택)
+function sendChat(message, conversation_id, role = "guest", user_id = null, attach = null) {
     const formData = new FormData();
     formData.append("message", message);
     formData.append("conversation_id", conversation_id);
     formData.append("role", role);
-    if (user_id !== null) {
-        formData.append("user_id", user_id);
-    }
+    if (user_id !== null) formData.append("user_id", user_id);
+    // 백엔드 /api/chat/service 는 multipart의 attach(UploadFile)로 이미지를 받는다
+    if (attach) formData.append("attach", attach);
     return axios.post("/api/chat/service", formData);
 }
 
@@ -31,9 +31,4 @@ function clearHistory(conversation_id, role = "guest", user_id = null) {
     return axios.delete("/chat_history/clear-history", { params });
 }
 
-export default {
-    sendChat,
-    getHistory,
-    getConversations,
-    clearHistory,
-};
+export default { sendChat, getHistory, getConversations, clearHistory };

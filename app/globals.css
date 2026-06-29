@@ -78,6 +78,17 @@ body {
   align-items: center;
   gap: 10px;
   padding: 8px 4px;
+  text-decoration: none;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  width: 100%;
+  border-radius: 8px;
+  transition: background-color 0.15s;
+}
+
+.sidebar-logo:hover {
+  background-color: var(--surface-sub);
 }
 
 .sidebar-logo-img {
@@ -183,6 +194,33 @@ body {
 }
 
 /* ============================================================
+   ErrorMessage
+   ============================================================ */
+.error-message-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 24px;
+  background-color: #FFF0F0;
+  border-bottom: 1px solid #FFD0D0;
+  flex-shrink: 0;
+}
+
+.error-message-text {
+  font-size: 13px;
+  color: var(--dday-urgent);
+}
+
+.error-message-close {
+  background: none;
+  border: none;
+  font-size: 14px;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0 4px;
+}
+
+/* ============================================================
    ChatWindow
    ============================================================ */
 .chat-wrapper {
@@ -281,7 +319,7 @@ body {
 }
 
 .message-bubble {
-  max-width: 65%;
+  max-width: 72%;
   padding: 14px 18px;
   border-radius: 18px;
   font-size: 14px;
@@ -437,6 +475,11 @@ body {
 }
 
 .policy-card-link {
+  /* <a>·<button>·<span> 어느 태그로 렌더되든 동일하게 보이도록 버튼 기본 스타일 리셋 */
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: inherit;
   font-size: 12px;
   color: var(--text-muted);
   cursor: pointer;
@@ -446,6 +489,130 @@ body {
 
 .policy-card-link:hover {
   color: var(--primary);
+}
+
+/* ============================================================
+   PolicyDetailModal (로그인 유저 상세 모달)
+   ============================================================ */
+.policy-detail-modal {
+  background: var(--surface);
+  border-radius: 16px;
+  width: 460px;
+  max-width: calc(100vw - 32px);
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 8px 32px rgba(90, 168, 44, 0.18);
+  overflow: hidden;
+}
+
+.policy-detail-header {
+  padding: 18px 24px 20px;
+}
+
+.policy-detail-header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.policy-detail-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.35;
+}
+
+.policy-detail-dday {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--dday-urgent);
+}
+
+.policy-detail-dday.always-open {
+  color: var(--text-muted);
+}
+
+.policy-detail-body {
+  padding: 20px 24px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.policy-detail-body::-webkit-scrollbar { width: 4px; }
+.policy-detail-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+.policy-detail-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.policy-detail-value {
+  font-size: 14px;
+  color: var(--text);
+  line-height: 1.65;
+  white-space: pre-line;
+}
+
+.policy-detail-footer {
+  padding: 16px 24px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 10px;
+}
+
+.policy-detail-save-btn {
+  flex-shrink: 0;
+  padding: 13px 18px;
+  border-radius: 12px;
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.policy-detail-save-btn:hover {
+  border-color: var(--primary);
+}
+
+.policy-detail-save-btn.saved {
+  background: var(--primary-light);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.policy-detail-apply-btn {
+  display: block;
+  flex: 1;
+  padding: 13px 0;
+  border-radius: 12px;
+  background: var(--primary);
+  color: var(--primary-text);
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+  transition: opacity 0.15s;
+}
+
+.policy-detail-apply-btn:hover {
+  opacity: 0.9;
+}
+
+.policy-detail-apply-btn.disabled {
+  background: var(--border);
+  color: var(--text-muted);
+  cursor: not-allowed;
 }
 
 /* ============================================================
@@ -514,6 +681,79 @@ body {
   font-size: 11px;
   color: var(--text-muted);
   margin-top: 10px;
+}
+
+/* ----- 이미지 첨부 ----- */
+.chat-attach-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  font-size: 18px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+
+.chat-attach-btn:hover {
+  background: var(--surface-sub);
+}
+
+.chat-attach-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.chat-attach-preview {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px 6px 6px;
+  margin-bottom: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  max-width: 260px;
+}
+
+.chat-attach-thumb {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.chat-attach-name {
+  font-size: 12px;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chat-attach-remove {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 13px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.chat-attach-remove:hover {
+  color: var(--dday-urgent);
+}
+
+/* 유저 말풍선 안 첨부 이미지 미리보기 */
+.message-image {
+  display: block;
+  max-width: 220px;
+  max-height: 220px;
+  border-radius: 12px;
+  margin-bottom: 8px;
+  object-fit: cover;
 }
 
 /* ============================================================
@@ -755,32 +995,92 @@ body {
 }
 
 /* ============================================================
-   BotMessage Markdown
+   Suggestions (follow-up 질문 버튼)
    ============================================================ */
-.message-bubble.bot h1,
-.message-bubble.bot h2,
-.message-bubble.bot h3 {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--text);
-  margin: 12px 0 4px;
+.suggestions-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
 }
 
-.message-bubble.bot h1:first-child,
-.message-bubble.bot h2:first-child,
-.message-bubble.bot h3:first-child { margin-top: 0; }
+.suggestion-chip {
+  background-color: var(--surface-sub);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 12px;
+  color: var(--text);
+  cursor: pointer;
+  transition: background-color 0.15s, border-color 0.15s;
+  text-align: left;
+  line-height: 1.5;
+}
+
+.suggestion-chip:hover {
+  background-color: var(--primary-light);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+/* ============================================================
+   BotMessage Markdown
+   ============================================================ */
+
+/* ## 분야 섹션 헤더 (주거 / 일자리 / 교육 / 복지문화) */
+.message-bubble.bot h2 {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-muted);
+  margin: 18px 0 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.message-bubble.bot h2:first-child { margin-top: 4px; }
+
+/* ### 개별 정책명 */
+.message-bubble.bot h3 {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 14px 0 5px;
+  padding-left: 8px;
+  border-left: 2px solid var(--border);
+}
+
+.message-bubble.bot h3:first-child { margin-top: 4px; }
+
+.message-bubble.bot h1 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 12px 0 6px;
+}
 
 .message-bubble.bot ul,
 .message-bubble.bot ol {
-  padding-left: 18px;
-  margin: 4px 0;
+  padding-left: 20px;
+  margin: 6px 0;
 }
 
-.message-bubble.bot li { margin: 2px 0; }
+.message-bubble.bot li {
+  margin: 4px 0;
+  line-height: 1.55;
+}
+
+.message-bubble.bot li + li { margin-top: 5px; }
 
 .message-bubble.bot strong {
   font-weight: 600;
   color: var(--text);
+}
+
+.message-bubble.bot em {
+  color: var(--text-muted);
+  font-style: normal;
 }
 
 .message-bubble.bot a {
@@ -789,7 +1089,66 @@ body {
   word-break: break-all;
 }
 
-.message-bubble.bot p { margin: 4px 0; }
+.message-bubble.bot p {
+  margin: 6px 0;
+  line-height: 1.6;
+}
+
+.message-bubble.bot p:first-child { margin-top: 0; }
+
+.message-bubble.bot hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 12px 0;
+}
+
+.message-bubble.bot code {
+  background: var(--surface-sub);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1px 5px;
+  font-size: 12px;
+  font-family: "Consolas", monospace;
+}
+
+.message-bubble.bot pre {
+  background: var(--surface-sub);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  overflow-x: auto;
+  margin: 8px 0;
+}
+
+.message-bubble.bot pre code {
+  border: none;
+  padding: 0;
+  background: transparent;
+}
+
+.message-bubble.bot table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin: 8px 0;
+}
+
+.message-bubble.bot th,
+.message-bubble.bot td {
+  border: 1px solid var(--border);
+  padding: 6px 10px;
+  text-align: left;
+}
+
+.message-bubble.bot th {
+  background: var(--primary-light);
+  font-weight: 600;
+  color: var(--text);
+}
+
+.message-bubble.bot tr:nth-child(even) td {
+  background: var(--surface-sub);
+}
 
 /* ============================================================
    UserProfileModal
@@ -1073,6 +1432,52 @@ body {
 }
 
 /* ============================================================
+   Responsive
+   ============================================================ */
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+
+  .chat-messages { padding: 16px; }
+
+  .chat-input-area { padding: 12px 16px 16px; }
+
+  .message-bubble { max-width: 85%; }
+  .message-bubble.bot { max-width: 90%; }
+
+  .chat-header { padding: 12px 16px; }
+
+  .empty-state {
+    padding: 24px 16px;
+    gap: 20px;
+  }
+
+  .empty-state-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    max-width: 100%;
+  }
+
+  .empty-state-tile { padding: 14px; }
+
+  .empty-state-chips { gap: 6px; }
+
+  .empty-state-chip {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  .policy-card { max-width: 100%; }
+}
+
+@media (max-width: 480px) {
+  .empty-state-grid { grid-template-columns: 1fr 1fr; }
+
+  .empty-state-title { font-size: 18px; }
+
+  .user-dropdown-btn span:not(.dropdown-arrow) { display: none; }
+}
+
+/* ============================================================
    TypingIndicator
    ============================================================ */
 .typing-dot {
@@ -1091,4 +1496,314 @@ body {
 @keyframes typing-blink {
   0%, 80%, 100% { opacity: 0.2; transform: scale(0.8); }
   40%           { opacity: 1;   transform: scale(1);   }
+}
+
+/* ============================================================
+   PolicyCalendar (저장한 정책 캘린더 — 유저 전용)
+   ============================================================ */
+/* 헤더 달력 아이콘 + 저장 개수 배지 */
+.calendar-icon-btn {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-size: 18px;
+  cursor: pointer;
+  margin-right: 10px;
+  transition: background 0.15s;
+}
+
+.calendar-icon-btn:hover {
+  background: var(--surface-sub);
+}
+
+.calendar-icon-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9px;
+  background: var(--dday-urgent);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 18px;
+  text-align: center;
+}
+
+/* 우측 슬라이드 패널 */
+.calendar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 600;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.calendar-panel {
+  width: 380px;
+  max-width: 90vw;
+  height: 100%;
+  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.12);
+  animation: calendar-slide-in 0.2s ease;
+  overflow-y: auto;
+}
+
+@keyframes calendar-slide-in {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+
+.calendar-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 20px 22px 16px;
+}
+
+.calendar-header-title {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.calendar-header-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--primary-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.calendar-header-title h3 {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.calendar-header-title p {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.calendar-tabs {
+  display: flex;
+  gap: 6px;
+  padding: 0 22px 14px;
+}
+
+.calendar-tab {
+  flex: 1;
+  padding: 10px 0;
+  border-radius: 10px;
+  border: none;
+  background: var(--surface-sub);
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.calendar-tab.active {
+  background: var(--primary);
+  color: var(--primary-text);
+}
+
+.calendar-month-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 28px 12px;
+}
+
+.calendar-month-nav span {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.calendar-month-nav button {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-size: 16px;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.calendar-month-nav button:hover {
+  background: var(--surface-sub);
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  padding: 0 18px;
+}
+
+.calendar-weekday {
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-muted);
+  padding: 6px 0;
+  font-weight: 600;
+}
+
+.calendar-cell {
+  position: relative;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  color: var(--text);
+  border-radius: 8px;
+}
+
+.calendar-cell.empty {
+  visibility: hidden;
+}
+
+.calendar-cell.today {
+  background: var(--primary-light);
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.calendar-dot {
+  position: absolute;
+  bottom: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.calendar-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  padding: 16px 24px;
+}
+
+.calendar-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.calendar-legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.calendar-saved {
+  padding: 4px 18px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.calendar-saved-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  padding: 0 4px 4px;
+}
+
+.calendar-empty {
+  font-size: 13px;
+  color: var(--text-muted);
+  text-align: center;
+  padding: 24px 0;
+}
+
+.calendar-group-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+  padding: 10px 4px 6px;
+}
+
+.calendar-policy-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  border-left-width: 4px;
+  background: var(--surface);
+  margin-bottom: 6px;
+}
+
+.calendar-policy-cat {
+  flex-shrink: 0;
+  padding: 3px 8px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.calendar-policy-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.calendar-policy-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.calendar-policy-deadline {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.calendar-policy-dday {
+  flex-shrink: 0;
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.calendar-policy-remove {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 13px;
+  cursor: pointer;
+  padding: 2px;
+}
+
+.calendar-policy-remove:hover {
+  color: var(--dday-urgent);
 }
