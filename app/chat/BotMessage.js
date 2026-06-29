@@ -1,23 +1,28 @@
+"use client"
+
+import { useState } from "react";
 import Image from "next/image";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
-const CATEGORY_STYLE = {
-    복지문화: { color: "var(--color-welfare)",   bg: "var(--color-welfare-bg)" },
-    주거:     { color: "var(--color-housing)",   bg: "var(--color-housing-bg)" },
-    교육:     { color: "var(--color-education)", bg: "var(--color-education-bg)" },
-    일자리:   { color: "var(--color-job)",       bg: "var(--color-job-bg)" },
-};
+import { useAuth } from "@/contexts/AuthContext";
+import { CATEGORY_STYLE } from "@/utils/policy";
+import PolicyResultList from "@/app/chat/PolicyResultList";
+import PolicyDetailModal from "@/app/chat/PolicyDetailModal";
 
-// LLM이 separator 없이 suggestions JSON을 본문에 포함했을 때 제거
+// LLM이 본문 뒤에 suggestions를 덧붙였을 때 제거.
+// separator(---SUGGESTIONS---) 기준으로만 잘라낸다. 과거엔 JSON 배열 패턴까지
+// 휴리스틱으로 제거했으나, 본문에 포함된 코드 예시·일반 텍스트의 대괄호 배열을
+// 오인해 정상 답변을 무음 삭제하는 위험이 있어 separator 기반으로 한정한다.
 function stripEmbeddedSuggestions(text) {
-    return text
-        .replace(/---SUGGESTIONS---[\s\S]*$/m, "")  // separator 이후 전체
-        .replace(/\[["'].*["']\s*,[\s\S]*?\]/m, "") // JSON 배열 패턴
-        .trimEnd();
+    return (text ?? "").replace(/---SUGGESTIONS---[\s\S]*$/m, "").trimEnd();
 }
 
 function BotMessage({ content, category = [], inquiry_type = "", policies = [], suggestions = [], onSelectQuestion }) {
+    const { currentUser } = useAuth();
+    // 상세 모달은 BotMessage가 소유한다 — 각 답변 메시지가 독립적으로 모달 상태를 가진다.
+    const [selectedPolicy, setSelectedPolicy] = useState(null);
+
     const hasAnalysis = category.length > 0 || inquiry_type;
     const cleanContent = stripEmbeddedSuggestions(content);
 
@@ -56,6 +61,13 @@ function BotMessage({ content, category = [], inquiry_type = "", policies = [], 
 
                 <ReactMarkdown remarkPlugins={[remarkGfm]}>{cleanContent}</ReactMarkdown>
 
+                {/* 정책 카드 목록 — 로그인 유저에게만 상세 모달 진입점(onSelectPolicy)을 준다.
+                    게스트는 콜백을 받지 못해 카드가 외부 신청 URL로 직접 연결된다. */}
+                <PolicyResultList
+                    policies={policies}
+                    onSelectPolicy={currentUser ? setSelectedPolicy : undefined}
+                />
+
                 {suggestions.length > 0 && (
                     <div className="suggestions-row">
                         {suggestions.map((q, i) => (
@@ -70,6 +82,13 @@ function BotMessage({ content, category = [], inquiry_type = "", policies = [], 
                     </div>
                 )}
             </div>
+
+            {selectedPolicy && (
+                <PolicyDetailModal
+                    policy={selectedPolicy}
+                    onClose={() => setSelectedPolicy(null)}
+                />
+            )}
         </div>
     );
 }
