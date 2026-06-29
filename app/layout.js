@@ -1,7 +1,9 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./globals.css";
+import "react-toastify/dist/ReactToastify.css";
 import AxiosConfig from "@/apis/AxiosConfig";
 import { AuthContextProvider } from "@/contexts/AuthContext";
+import ToastProvider from "@/app/components/ToastProvider";
 
 export const metadata = {
   title: "청포도 – 청년정책 AI 친구",
@@ -16,6 +18,7 @@ export default function RootLayout({ children }) {
         <AuthContextProvider>
           {children}
         </AuthContextProvider>
+        <ToastProvider />
       </body>
     </html>
   );

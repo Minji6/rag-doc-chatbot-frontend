@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { toast } from "react-toastify";
 
 const ZIP_OPTIONS = [
     "서울특별시", "부산광역시", "대구광역시", "인천광역시",
@@ -70,17 +71,58 @@ function UserProfileModal({ users = [], onSelectUser, onCreateUser, onDeleteUser
     const [tab, setTab] = useState("select"); // "select" | "create"
     const [form, setForm] = useState(EMPTY_FORM);
     const [submitting, setSubmitting] = useState(false);
-    const [submitError, setSubmitError] = useState(null);
 
     const handleChange = (field, value) => {
         setForm((prev) => ({ ...prev, [field]: value }));
     };
 
+    const handleDeleteClick = (e, userId, nickname) => {
+        e.stopPropagation();
+        toast(
+            ({ closeToast }) => (
+                <div>
+                    <p style={{ marginBottom: "8px" }}>
+                        <strong>{nickname}</strong> 사용자를 삭제하시겠습니까?
+                    </p>
+                    <div style={{ display: "flex", gap: "8px" }}>
+                        <button
+                            onClick={() => { onDeleteUser(userId); closeToast(); }}
+                            style={{ padding: "4px 12px", background: "#e53e3e", color: "#fff", border: "none", borderRadius: "4px", cursor: "pointer" }}
+                        >
+                            삭제
+                        </button>
+                        <button
+                            onClick={closeToast}
+                            style={{ padding: "4px 12px", background: "#e2e8f0", border: "none", borderRadius: "4px", cursor: "pointer" }}
+                        >
+                            취소
+                        </button>
+                    </div>
+                </div>
+            ),
+            { autoClose: false, closeButton: false }
+        );
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!form.nickname.trim() || !form.birth_date) return;
+        if (!form.nickname.trim()) {
+            toast.warn("닉네임을 입력해주세요.");
+            return;
+        }
+        if (!form.birth_date) {
+            toast.warn("생년월일을 입력해주세요.");
+            return;
+        }
+        if (new Date(form.birth_date) < new Date("1900-01-01")) {
+            toast.warn("생년월일은 1900년 이후여야 합니다.");
+            return;
+        }
+        if (new Date(form.birth_date) > new Date()) {
+            toast.warn("생년월일은 오늘 이후 날짜로 설정할 수 없습니다.");
+            return;
+        }
         setSubmitting(true);
-        setSubmitError(null);
         try {
             await onCreateUser({
                 ...form,
@@ -88,10 +130,11 @@ function UserProfileModal({ users = [], onSelectUser, onCreateUser, onDeleteUser
                 category: form.category.join(","),
                 earncndsecd: form.earncndsecd ? Number(form.earncndsecd) : null,
             });
+            toast.success("사용자가 등록되었습니다.");
             setForm(EMPTY_FORM);
             setTab("select");
         } catch {
-            setSubmitError("사용자 등록에 실패했습니다. 다시 시도해주세요.");
+            toast.error("사용자 등록에 실패했습니다. 다시 시도해주세요.");
         } finally {
             setSubmitting(false);
         }
@@ -150,7 +193,7 @@ function UserProfileModal({ users = [], onSelectUser, onCreateUser, onDeleteUser
                                 <button
                                     className="modal-user-delete"
                                     style={{ visibility: user.user_id > 10 ? "visible" : "hidden" }}
-                                    onClick={(e) => { e.stopPropagation(); if (window.confirm(`${user.nickname} 사용자를 삭제하시겠습니까?`)) onDeleteUser(user.user_id); }}
+                                    onClick={(e) => handleDeleteClick(e, user.user_id, user.nickname)}
                                 >✕</button>
                             </div>
                         ))}
@@ -256,9 +299,6 @@ function UserProfileModal({ users = [], onSelectUser, onCreateUser, onDeleteUser
                             />
                         </div>
 
-                        {submitError && (
-                            <div className="modal-submit-error">{submitError}</div>
-                        )}
                         <button
                             className="modal-submit-btn"
                             type="submit"
