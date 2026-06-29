@@ -64,5 +64,9 @@ export function SavedPoliciesProvider({ children }) {
 }
 
 export function useSavedPolicies() {
-    return useContext(SavedPoliciesContext)
+    const ctx = useContext(SavedPoliciesContext)
+    if (!ctx) {
+        throw new Error("useSavedPolicies must be used within SavedPoliciesProvider")
+    }
+    return ctx
 }

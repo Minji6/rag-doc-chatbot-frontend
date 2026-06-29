@@ -75,13 +75,20 @@ export const URGENCY = {
     urgent:  { label: "긴급", color: "#E5484D" },  // D-7 이하
     soon:    { label: "임박", color: "#F59E3C" },  // D-21 이하
     relaxed: { label: "여유", color: "#5AA82C" },  // 그 외
-    always:  { label: "상시", color: "#9AA0A6" },  // 마감 없음/지남
+    expired: { label: "마감", color: "#B4434E" },  // 마감일 지남
+    always:  { label: "상시", color: "#9AA0A6" },  // 마감 없음(상시모집)
 };
 
-/** 정책의 임박도 단계 키를 반환 (URGENCY의 키). */
+/**
+ * 정책의 임박도 단계 키를 반환 (URGENCY의 키).
+ * 마감일이 지난 정책은 "expired"로 분리한다 — getDdayInfo가 같은 정책을 "마감"
+ * 배지로 표시하므로, 이를 "always"(상시 회색)로 묶으면 도트/테두리 색과
+ * 배지 의미가 어긋난다.
+ */
 export function getUrgencyLevel(policy) {
     const days = getDdayNumber(policy);
-    if (days === null || days < 0) return "always";
+    if (days === null) return "always";
+    if (days < 0) return "expired";
     if (days <= 7) return "urgent";
     if (days <= 21) return "soon";
     return "relaxed";

@@ -10,9 +10,13 @@ import { loadJSON, saveJSON } from "@/utils/storage";
 
 const KEY = (userId) => `cheongpodo:saved:${userId}`;
 
-/** 정책 식별자 — plcyNo 우선, 없으면 정책명으로 폴백. */
+/**
+ * 정책 식별자 — plcyNo 우선, 없으면 정책명으로 폴백.
+ * 둘 다 없으면 null. (빈 문자열로 폴백하면 식별자 없는 정책들이 전부
+ * 동일 키 ""로 묶여, 서로 다른 정책을 같은 항목으로 취급하는 토글 버그 발생.)
+ */
 export function policyId(policy) {
-    return policy?.plcyNo ?? policy?.plcyNm ?? "";
+    return policy?.plcyNo ?? policy?.plcyNm ?? null;
 }
 
 /** 유저의 저장 정책 목록을 반환. */
@@ -21,18 +25,21 @@ export function loadSavedPolicies(userId) {
     return loadJSON(KEY(userId), []);
 }
 
-/** 목록에 해당 정책이 이미 저장돼 있는지. */
+/** 목록에 해당 정책이 이미 저장돼 있는지. (식별자 없으면 false) */
 export function isPolicySaved(list, policy) {
     const id = policyId(policy);
+    if (id == null) return false;
     return list.some((p) => policyId(p) === id);
 }
 
 /**
  * 저장 토글: 이미 있으면 제거, 없으면 맨 앞에 추가하고 영속화한다.
+ * 식별자가 없는 정책은 저장 자체를 차단한다(다른 정책과 혼동 방지).
  * @returns {object[]} 갱신된 목록
  */
 export function toggleSavedPolicy(userId, list, policy) {
     const id = policyId(policy);
+    if (id == null) return list;
     const exists = list.some((p) => policyId(p) === id);
     const next = exists
         ? list.filter((p) => policyId(p) !== id)
