@@ -1,7 +1,14 @@
 "use client"
 
 import { createPortal } from "react-dom";
-import { categoryStyle, getDdayInfo, formatApplyPeriod } from "@/utils/policy";
+import { categoryStyle, getDdayInfo, getUrgencyLevel, formatApplyPeriod } from "@/utils/policy";
+
+// D-Day 텍스트 색상 — 마감임박 빨강 / 진행중 주황 / 마감됨·상시 회색
+function ddayTextColor(urgencyLevel, muted) {
+    if (muted || urgencyLevel === "expired" || urgencyLevel === "always") return "var(--text-muted)";
+    if (urgencyLevel === "urgent") return "#E5484D";
+    return "#F59E3C";
+}
 import { useSavedPolicies } from "@/contexts/SavedPoliciesContext";
 
 /**
@@ -31,6 +38,7 @@ function PolicyDetailModal({ policy, onClose }) {
 
     const style = categoryStyle(category);
     const dday = getDdayInfo(policy);
+    const ddayColor = ddayTextColor(getUrgencyLevel(policy), dday?.muted);
     const applyPeriod = formatApplyPeriod(policy);
     const url = aplyUrlAddr?.trim();
 
@@ -69,7 +77,7 @@ function PolicyDetailModal({ policy, onClose }) {
                     </div>
                     <h3 className="policy-detail-title">{plcyNm}</h3>
                     {dday && (
-                        <span className={`policy-detail-dday${dday.muted ? " always-open" : ""}`}>
+                        <span className="policy-detail-dday" style={{ color: ddayColor }}>
                             {dday.label}
                         </span>
                     )}

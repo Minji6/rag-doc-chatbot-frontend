@@ -75,8 +75,8 @@ export const URGENCY = {
     urgent:  { label: "긴급", color: "#E5484D" },  // D-7 이하
     soon:    { label: "임박", color: "#F59E3C" },  // D-21 이하
     relaxed: { label: "여유", color: "#5AA82C" },  // 그 외
-    expired: { label: "마감", color: "#B4434E" },  // 마감일 지남
-    always:  { label: "상시", color: "#9AA0A6" },  // 마감 없음(상시모집)
+    expired: { label: "마감", color: "#9AA0A6" },  // 마감일 지남 — 회색
+    always:  { label: "상시", color: "#4A90D9" },  // 마감 없음(상시모집) — 파랑
 };
 
 /**
