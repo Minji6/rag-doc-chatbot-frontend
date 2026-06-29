@@ -1,17 +1,25 @@
 import Image from "next/image";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import PolicyCard from "@/app/chat/PolicyCard";
 
 const CATEGORY_STYLE = {
-    복지:   { color: "var(--color-welfare)",   bg: "var(--color-welfare-bg)" },
-    주거:   { color: "var(--color-housing)",   bg: "var(--color-housing-bg)" },
-    교육:   { color: "var(--color-education)", bg: "var(--color-education-bg)" },
-    일자리: { color: "var(--color-job)",       bg: "var(--color-job-bg)" },
+    복지문화: { color: "var(--color-welfare)",   bg: "var(--color-welfare-bg)" },
+    주거:     { color: "var(--color-housing)",   bg: "var(--color-housing-bg)" },
+    교육:     { color: "var(--color-education)", bg: "var(--color-education-bg)" },
+    일자리:   { color: "var(--color-job)",       bg: "var(--color-job-bg)" },
 };
 
-function BotMessage({ content, category = [], inquiry_type = "", policies = [] }) {
+// LLM이 separator 없이 suggestions JSON을 본문에 포함했을 때 제거
+function stripEmbeddedSuggestions(text) {
+    return text
+        .replace(/---SUGGESTIONS---[\s\S]*$/m, "")  // separator 이후 전체
+        .replace(/\[["'].*["']\s*,[\s\S]*?\]/m, "") // JSON 배열 패턴
+        .trimEnd();
+}
+
+function BotMessage({ content, category = [], inquiry_type = "", policies = [], suggestions = [], onSelectQuestion }) {
     const hasAnalysis = category.length > 0 || inquiry_type;
+    const cleanContent = stripEmbeddedSuggestions(content);
 
     return (
         <div className="message-row bot">
@@ -46,12 +54,18 @@ function BotMessage({ content, category = [], inquiry_type = "", policies = [] }
                     </div>
                 )}
 
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>{cleanContent}</ReactMarkdown>
 
-                {policies.length > 0 && (
-                    <div className="policy-card-list">
-                        {policies.map((policy, i) => (
-                            <PolicyCard key={i} policy={policy} />
+                {suggestions.length > 0 && (
+                    <div className="suggestions-row">
+                        {suggestions.map((q, i) => (
+                            <button
+                                key={i}
+                                className="suggestion-chip"
+                                onClick={() => onSelectQuestion?.(q)}
+                            >
+                                {q}
+                            </button>
                         ))}
                     </div>
                 )}

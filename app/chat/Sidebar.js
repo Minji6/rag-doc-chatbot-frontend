@@ -5,13 +5,13 @@ import Image from "next/image"
 function Sidebar({ conversations = [], activeId, onSelectChat, onNewChat, onDeleteChat }) {
     return (
         <div className="sidebar">
-            <div className="sidebar-logo">
-                <Image src="/cheongpodo.png" alt="청포도" width={38} height={38} className="sidebar-logo-img" />
+            <button className="sidebar-logo" onClick={onNewChat}>
+                <Image src="/logo.png" alt="청포도" width={38} height={38} className="sidebar-logo-img" />
                 <div>
                     <div className="sidebar-logo-title">청포도</div>
-                    <div className="sidebar-logo-sub">청년정책 AI 친구·청포리</div>
+                    <div className="sidebar-logo-sub">청년정책 AI 챗봇</div>
                 </div>
-            </div>
+            </button>
 
             <button className="btn new-chat-btn w-100" onClick={onNewChat}>
                 + 새 대화 시작
