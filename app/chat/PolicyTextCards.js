@@ -65,14 +65,31 @@ function renderValue(value) {
 // 정책명 비교용 정규화 — 공백 차이를 무시해 매칭 안정성을 높인다.
 const normalizeName = (s) => (s || "").replace(/\s+/g, "").trim();
 
+// 파싱된 정책명(카드 제목)에 대응하는 raw 메타를 찾는다.
+// 1) 정규화 정확매칭 → 2) 실패 시 포함관계(한쪽이 다른 쪽을 포함)로 폴백하되,
+// 후보가 유일할 때만 채택한다(여러 개면 오매칭 위험이 커 미표시). LLM이 정책명을
+// 살짝 다르게(접두·접미·괄호 등) 쓰면 정확매칭이 깨져 뱃지가 사라지던 문제 보완.
+function findMeta(name, metaByName, metaList) {
+    const norm = normalizeName(name);
+    if (!norm) return null;
+    const exact = metaByName.get(norm);
+    if (exact) return exact;
+    const cands = metaList.filter((p) => {
+        const n = normalizeName(p.plcyNm);
+        return n && (n.includes(norm) || norm.includes(n));
+    });
+    return cands.length === 1 ? cands[0] : null;
+}
+
 function PolicyTextCards({ content, policies = [], category = [] }) {
     const { intro, policies: parsed } = parseMarkdownPolicies(content);
 
     // 정책명 → raw 메타 매핑. 인덱스 순서 매칭은 "자격 미충족 안내" 같은 비정책
     // ### 블록이 끼면 어긋나 엉뚱한 D-day가 붙으므로, 이름으로 매칭한다.
     // 매칭되는 메타가 없으면(안내 카드 등) D-day 뱃지를 붙이지 않는다.
+    const metaList = policies.filter(p => p?.plcyNm);
     const metaByName = new Map(
-        policies.filter(p => p?.plcyNm).map(p => [normalizeName(p.plcyNm), p])
+        metaList.map(p => [normalizeName(p.plcyNm), p])
     );
 
     if (!parsed.length) {
@@ -91,7 +108,7 @@ function PolicyTextCards({ content, policies = [], category = [] }) {
             <div className="policy-card-list">
                 {parsed.map(({ name, summary, fields }, i) => {
                     // D-Day: 정책명으로 raw 메타 매칭. 매칭 없으면(안내 카드 등) 뱃지 미표시.
-                    const meta = metaByName.get(normalizeName(name)) ?? null;
+                    const meta = findMeta(name, metaByName, metaList);
                     const dday = meta ? getDdayInfo(meta) : null;
                     const urgencyLevel = meta ? getUrgencyLevel(meta) : "always";
                     const ddayStyle = getDdayBadgeStyle(dday?.label, urgencyLevel);

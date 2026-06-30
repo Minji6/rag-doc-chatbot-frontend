@@ -4,8 +4,6 @@
  * 이전엔 CATEGORY_STYLE과 D-day 계산이 PolicyCard·BotMessage·utils/date 에
  * 흩어져 중복돼 있었다(값도 "상시모집" vs "상시"로 어긋남). 단일 출처로 모은다.
  */
-import { calculateDday } from "@/utils/date";
-
 // 분야별 배지 색상. category 값이 매핑에 없으면 기본 primary 색을 쓴다.
 export const CATEGORY_STYLE = {
     복지문화: { color: "var(--color-welfare)",   bg: "var(--color-welfare-bg)" },
@@ -19,19 +17,48 @@ export function categoryStyle(category) {
     return CATEGORY_STYLE[category] ?? { color: "var(--primary)", bg: "var(--primary-light)" };
 }
 
+// 날짜 표기(YYYYMMDD / YYYY.MM.DD / YYYY-MM-DD)를 모두 매칭. 전역 플래그라 사용 전 lastIndex 리셋.
+const _DATE_RE = /(\d{4})[.\-]?(\d{2})[.\-]?(\d{2})/g;
+
+/**
+ * 정책의 신청기간(aplyYmd)·사업종료일(bizPrdEndYmd) 문자열에서 날짜를 모두 뽑아
+ * 가장 늦은 날짜(=마감일)를 Date로 반환한다. 마감일의 단일 출처.
+ *
+ * 이전엔 bizPrdEndYmd만 봤는데, 실제 신청 마감일은 대부분 aplyYmd(기간 범위)에 있고
+ * bizPrdEndYmd는 비어있는 경우가 많아 "상시"/"마감"으로 잘못 표시됐다(백엔드 dday_label과 동일 로직).
+ */
+function parseDeadlineDate(policy) {
+    const text = `${policy?.aplyYmd ?? ""} ${policy?.bizPrdEndYmd ?? ""}`;
+    let latest = null;
+    _DATE_RE.lastIndex = 0;
+    let m;
+    while ((m = _DATE_RE.exec(text)) !== null) {
+        const d = new Date(`${m[1]}-${m[2]}-${m[3]}`);
+        if (!isNaN(d)) {
+            d.setHours(0, 0, 0, 0);
+            if (latest === null || d > latest) latest = d;
+        }
+    }
+    return latest;
+}
+
 /**
  * 정책의 신청 마감 상태를 배지용 정보로 변환한다.
- * @param {object} policy - 백엔드 정책 메타 (bizPrdEndYmd, aplyPrdSeCd 사용)
+ * @param {object} policy - 백엔드 정책 메타 (aplyPrdSeCd, aplyYmd, bizPrdEndYmd 사용)
  * @returns {{ label: string, muted: boolean } | null}
  *   label  - "D-30" | "D-Day" | "마감" | "상시"
  *   muted  - 상시/마감처럼 긴급도 색을 빼야 하는 경우 true
  */
 export function getDdayInfo(policy) {
     if (!policy) return null;
-    const label = calculateDday(policy.bizPrdEndYmd, policy.aplyPrdSeCd);
-    if (!label) return null;
-    const muted = label === "상시" || label === "마감";
-    return { label, muted };
+    const se = (policy.aplyPrdSeCd || "").trim();
+    if (se === "상시") return { label: "상시", muted: true };
+    if (se === "마감") return { label: "마감", muted: true };
+    const days = getDdayNumber(policy);
+    if (days === null) return { label: "상시", muted: true };  // 마감일 정보 없음 → 상시로 표시
+    if (days < 0) return { label: "마감", muted: true };
+    if (days === 0) return { label: "D-Day", muted: false };
+    return { label: `D-${days}`, muted: false };
 }
 
 /**
@@ -48,17 +75,12 @@ export function formatApplyPeriod(policy) {
     return begin || end || "";
 }
 
-/** 정책 마감일을 Date로 파싱 (YYYYMMDD). 상시/마감/형식오류면 null. */
+/** 정책 마감일을 Date로 반환 (aplyYmd+bizPrdEndYmd 중 가장 늦은 날짜). 상시/마감/날짜없음이면 null. */
 export function getDeadlineDate(policy) {
     if (!policy) return null;
     const se = (policy.aplyPrdSeCd || "").trim();
     if (se === "상시" || se === "마감") return null;
-    const end = (policy.bizPrdEndYmd || "").trim();
-    if (end.length < 8) return null;
-    const date = new Date(`${end.slice(0, 4)}-${end.slice(4, 6)}-${end.slice(6, 8)}`);
-    if (isNaN(date)) return null;
-    date.setHours(0, 0, 0, 0);
-    return date;
+    return parseDeadlineDate(policy);
 }
 
 /** 마감까지 남은 일수(정수). 상시/마감/형식오류면 null. */
