@@ -1,6 +1,7 @@
 "use client"
 
 import { useRef, useMemo, useEffect } from "react";
+import { CloseIcon } from "@/app/components/CloseIcon";
 
 const MAX_IMAGE_BYTES = 10 * 1024 * 1024; // 백엔드(10MB) 제한과 일치 — 업로드 전 빠른 실패
 
@@ -45,7 +46,7 @@ function ChatInput({ input, loading, attach, onSend, onInputChange, onKeyDown, o
                     <img src={previewUrl} alt="첨부 미리보기" className="chat-attach-thumb" />
                     <span className="chat-attach-name">{attach.name}</span>
                     <button className="chat-attach-remove" onClick={onRemoveAttach} aria-label="첨부 제거">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+                        <CloseIcon size={14} />
                     </button>
                 </div>
             )}

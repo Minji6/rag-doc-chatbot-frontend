@@ -16,13 +16,13 @@ function stripEmbeddedSuggestions(text) {
     return (text ?? "").replace(/---SUGGESTIONS---[\s\S]*$/m, "").trimEnd();
 }
 
-function BotMessage({ content, category = [], inquiry_type = "", policies = [], suggestions = [], onSelectQuestion }) {
+function BotMessage({ content, category = [], inquiry_type = [], policies = [], suggestions = [], onSelectQuestion }) {
     const { currentUser } = useAuth();
     // 상세 모달은 각 답변 메시지가 독립적으로 소유한다.
     const [selectedPolicy, setSelectedPolicy] = useState(null);
 
-    const types = Array.isArray(inquiry_type) ? inquiry_type : inquiry_type ? [inquiry_type] : [];
-    const typeLabel = types.join(" · ");
+    // 백엔드가 inquiry_type을 배열로 반환하므로 배열/문자열 모두 처리
+    const types = Array.isArray(inquiry_type) ? inquiry_type : (inquiry_type ? [inquiry_type] : []);
     const hasAnalysis = category.length > 0 || types.length > 0;
     const cleanContent = stripEmbeddedSuggestions(content);
 
@@ -68,18 +68,23 @@ function BotMessage({ content, category = [], inquiry_type = "", policies = [], 
                                 </span>
                             );
                         })}
-                        {typeLabel && (
-                            <span className="analysis-badge intent">의도 {typeLabel}</span>
+                        {types.length > 0 && (
+                            <span className="analysis-badge intent">의도 {types.join(", ")}</span>
                         )}
                     </div>
                 )}
 
-                {/* 상세조회: 구조화 데이터 카드 */}
+                {/* 상세조회: 카드 위 안내 멘트(composer 메시지, 있으면) + 구조화 데이터 카드 */}
                 {isDetailOnly && (
-                    <PolicyResultList
-                        policies={policies}
-                        onSelectPolicy={currentUser ? setSelectedPolicy : undefined}
-                    />
+                    <>
+                        {cleanContent && (
+                            <ReactMarkdown remarkPlugins={[remarkGfm]}>{cleanContent}</ReactMarkdown>
+                        )}
+                        <PolicyResultList
+                            policies={policies}
+                            onSelectPolicy={currentUser ? setSelectedPolicy : undefined}
+                        />
+                    </>
                 )}
 
                 {/* 검색·복합: 백엔드 텍스트 파싱 → 카드 */}

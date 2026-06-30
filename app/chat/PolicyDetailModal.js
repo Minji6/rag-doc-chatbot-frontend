@@ -10,6 +10,7 @@ function ddayTextColor(urgencyLevel, muted) {
     return "#F59E3C";
 }
 import { useSavedPolicies } from "@/contexts/SavedPoliciesContext";
+import { CloseIcon } from "@/app/components/CloseIcon";
 
 /**
  * 정책 상세 모달 (로그인 유저가 카드의 "자세히 보기"를 눌렀을 때).
@@ -72,7 +73,7 @@ function PolicyDetailModal({ policy, onClose }) {
                             {category}
                         </span>
                         <button className="modal-close-btn" onClick={onClose}>
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+                            <CloseIcon size={16} />
                         </button>
                     </div>
                     <h3 className="policy-detail-title">{plcyNm}</h3>
