@@ -1,20 +1,4 @@
-import { getDdayInfo, getUrgencyLevel } from "@/utils/policy";
-
-// D-Day 배지 색상 — 마감 상태별 구분 (PolicyTextCards와 동일 규칙).
-//   마감임박(D-7 이하) → 빨강 / 진행중 → 주황 / 상시 → 파랑(달력과 동일) / 마감됨 → 회색
-function ddayBadgeStyle(urgencyLevel, muted) {
-    if (urgencyLevel === "always") {
-        // 상시모집은 달력 범례와 같은 파랑(URGENCY.always)으로 통일.
-        return { background: "#EAF2FB", color: "#4A90D9" };
-    }
-    if (muted || urgencyLevel === "expired") {
-        return { background: "#F3F4F6", color: "#9CA3AF" };
-    }
-    if (urgencyLevel === "urgent") {
-        return { background: "#E5484D", color: "#fff" };
-    }
-    return { background: "#F59E3C", color: "#fff" };
-}
+import { getDdayInfo, getUrgencyLevel, getDdayBadgeStyle } from "@/utils/policy";
 
 function PolicyCard({ policy, onDetail }) {
     const {
@@ -64,7 +48,7 @@ function PolicyCard({ policy, onDetail }) {
     ].filter(Boolean).filter(([, v]) => v);
 
     // D-Day 배지 스타일 — 긴급도별 색상
-    const ddayStyle = ddayBadgeStyle(urgencyLevel, dday?.muted);
+    const ddayStyle = getDdayBadgeStyle(dday?.label, urgencyLevel);
 
     return (
         <div className="policy-card">
