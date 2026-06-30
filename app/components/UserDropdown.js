@@ -3,7 +3,7 @@
 import { useState } from "react"
 import Image from "next/image"
 import { useAuth } from "@/contexts/AuthContext"
-import UserProfileModal from "@/app/user/UserProfileModal"
+import UserProfileModal from "@/app/components/UserProfileModal"
 import memberApi from "@/apis/memberApi"
 
 export default function UserDropdown() {

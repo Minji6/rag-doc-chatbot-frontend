@@ -3,7 +3,7 @@
 import MessageList from "@/app/chat/MessageList";
 import ChatInput from "@/app/chat/ChatInput";
 import PolicyCalendar from "@/app/chat/PolicyCalendar";
-import UserDropdown from "@/app/UserDropdown";
+import UserDropdown from "@/app/components/UserDropdown";
 import { useSavedPolicies } from "@/contexts/SavedPoliciesContext";
 
 function ChatWindow({ messages = [], loading, input, attach, onSend, onInputChange, onKeyDown, onAttach, onRemoveAttach, onSelectQuestion, title = "새 대화" }) {
