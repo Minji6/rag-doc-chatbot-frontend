@@ -23,6 +23,7 @@ function BotMessage({ content, category = [], inquiry_type = [], policies = [], 
     // 상세 모달은 BotMessage가 소유한다 — 각 답변 메시지가 독립적으로 모달 상태를 가진다.
     const [selectedPolicy, setSelectedPolicy] = useState(null);
 
+    // 백엔드가 inquiry_type을 배열로 반환하므로 배열/문자열 모두 처리
     const types = Array.isArray(inquiry_type) ? inquiry_type : (inquiry_type ? [inquiry_type] : []);
     const isDetail = types.includes("상세조회");
 

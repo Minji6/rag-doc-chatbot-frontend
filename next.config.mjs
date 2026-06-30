@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  experimental: {
+    proxyTimeout: 180_000,  // 3분 — 이미지 분석 + 다중 LLM 호출 대비
+  },
   async rewrites() {
     return [
       {
