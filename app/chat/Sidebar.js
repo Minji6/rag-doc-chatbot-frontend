@@ -16,6 +16,7 @@ function Sidebar({ conversations = [], activeId, onSelectChat, onNewChat, onDele
                         width={130}
                         height={40}
                         className="sidebar-letter-logo"
+                        style={{ width: "auto", height: "auto" }}
                         onError={() => setLogoOk(false)}
                     />
                 ) : (

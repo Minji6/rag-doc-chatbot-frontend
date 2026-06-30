@@ -5,24 +5,6 @@ import remarkGfm from "remark-gfm";
 import { getDdayInfo, getUrgencyLevel } from "@/utils/policy";
 import { parseMarkdownPolicies } from "@/utils/parseMarkdownPolicies";
 
-// 카테고리별 강조색 (정책 번호 등 accent)
-const ACCENT_BY_CATEGORY = {
-    복지문화: "#FF6F91",
-    복지: "#FF6F91",
-    주거: "#16B6A0",
-    교육: "#8A6CFF",
-    일자리: "#F59E3C",
-};
-const DEFAULT_ACCENT = "var(--primary)"; // globals.css의 --primary와 동일
-
-function pickAccent(category) {
-    const cats = Array.isArray(category) ? category : category ? [category] : [];
-    for (const c of cats) {
-        if (ACCENT_BY_CATEGORY[c]) return ACCENT_BY_CATEGORY[c];
-    }
-    return DEFAULT_ACCENT;
-}
-
 // D-Day 배지 색상 — 마감 상태별로 구분.
 //   마감임박(D-7 이하) → 빨강 / 진행중 → 주황 / 마감됨·상시 → 회색
 function ddayBadgeStyle(urgencyLevel, muted) {
@@ -71,7 +53,6 @@ function renderValue(value) {
  */
 function PolicyTextCards({ content, policies = [], category = [] }) {
     const { intro, policies: parsed } = parseMarkdownPolicies(content);
-    const accent = pickAccent(category);
 
     if (!parsed.length) {
         // 파싱 결과가 없으면 원본 마크다운 그대로 표시
@@ -96,11 +77,8 @@ function PolicyTextCards({ content, policies = [], category = [] }) {
 
                     return (
                         <div key={i} className="policy-card">
-                            {/* 번호 · 정책명 · D-Day */}
+                            {/* 정책명 · D-Day */}
                             <div className="policy-card-title-row">
-                                <span className="policy-card-number" style={{ color: accent }}>
-                                    {i + 1}.
-                                </span>
                                 <span className="policy-card-name">{name}</span>
                                 {dday && (
                                     <span className="policy-card-dday" style={ddayStyle}>
