@@ -2,19 +2,8 @@
 
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { getDdayInfo, getUrgencyLevel, URGENCY } from "@/utils/policy";
+import { getDdayInfo, getUrgencyLevel, getDdayBadgeStyle } from "@/utils/policy";
 import { parseMarkdownPolicies } from "@/utils/parseMarkdownPolicies";
-
-// D-Day 배지 색상 — 달력 범례(URGENCY)와 같은 단일 출처에서 가져와 색을 통일한다.
-//   긴급 빨강 / 임박 주황 / 여유 초록 / 마감 회색 / 상시 파랑.
-// 표시 라벨(상시/마감)을 우선해 라벨↔색을 항상 일치시키고, 나머지는 urgencyLevel을 쓴다.
-function ddayBadgeStyle(label, urgencyLevel) {
-    const key = label === "상시" ? "always"
-        : label === "마감" ? "expired"
-        : urgencyLevel;
-    const color = (URGENCY[key] ?? URGENCY.always).color;
-    return { background: `${color}1A`, color };  // 색상 + 10% 투명 배경
-}
 
 // URL을 클릭 가능한 링크로 변환
 function renderValue(value) {
@@ -82,7 +71,7 @@ function PolicyTextCards({ content, policies = [], category = [] }) {
                     const meta = metaByName.get(normalizeName(name)) ?? null;
                     const dday = meta ? getDdayInfo(meta) : null;
                     const urgencyLevel = meta ? getUrgencyLevel(meta) : "always";
-                    const ddayStyle = ddayBadgeStyle(dday?.label, urgencyLevel);
+                    const ddayStyle = getDdayBadgeStyle(dday?.label, urgencyLevel);
 
                     return (
                         <div key={i} className="policy-card">
