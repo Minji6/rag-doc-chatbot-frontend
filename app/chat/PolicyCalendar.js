@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { CloseIcon } from "@/app/components/CloseIcon"
 import { useSavedPolicies } from "@/contexts/SavedPoliciesContext"
 import {
     categoryStyle,
@@ -66,7 +67,7 @@ function SavedPolicyItem({ policy, onRemove }) {
                 </span>
             )}
             <button className="calendar-policy-remove" onClick={() => onRemove(policy)}>
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+                <CloseIcon size={13} />
             </button>
         </div>
     )
@@ -129,7 +130,7 @@ function PolicyCalendar() {
                         </div>
                     </div>
                     <button className="modal-close-btn" onClick={closeCalendar}>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+                        <CloseIcon size={16} />
                     </button>
                 </header>
 

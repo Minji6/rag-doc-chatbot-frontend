@@ -18,15 +18,14 @@ function stripEmbeddedSuggestions(text) {
     return (text ?? "").replace(/---SUGGESTIONS---[\s\S]*$/m, "").trimEnd();
 }
 
-function BotMessage({ content, category = [], inquiry_type = "", policies = [], suggestions = [], onSelectQuestion }) {
+function BotMessage({ content, category = [], inquiry_type = [], policies = [], suggestions = [], onSelectQuestion }) {
     const { currentUser } = useAuth();
     // 상세 모달은 BotMessage가 소유한다 — 각 답변 메시지가 독립적으로 모달 상태를 가진다.
     const [selectedPolicy, setSelectedPolicy] = useState(null);
 
     // 백엔드가 inquiry_type을 배열로 반환하므로 배열/문자열 모두 처리
-    const types = Array.isArray(inquiry_type) ? inquiry_type : inquiry_type ? [inquiry_type] : [];
-    const isDetailOnly = types.length === 1 && types[0] === "상세조회";
-    const typeLabel = types.join(" · ");
+    const types = Array.isArray(inquiry_type) ? inquiry_type : (inquiry_type ? [inquiry_type] : []);
+    const isDetail = types.includes("상세조회");
 
     const hasAnalysis = category.length > 0 || types.length > 0;
     const cleanContent = stripEmbeddedSuggestions(content);
@@ -58,20 +57,20 @@ function BotMessage({ content, category = [], inquiry_type = "", policies = [], 
                                 </span>
                             );
                         })}
-                        {typeLabel && (
-                            <span className="analysis-badge intent">의도 {typeLabel}</span>
+                        {types.length > 0 && (
+                            <span className="analysis-badge intent">의도 {types.join(", ")}</span>
                         )}
                     </div>
                 )}
 
-                {/* 상세조회는 카드가 답변 역할을 하므로 텍스트를 숨긴다. */}
-                {!isDetailOnly && (
+                {/* 텍스트 메시지: 내용이 있으면 항상 표시. 상세조회는 카드 위 안내 멘트로 활용. */}
+                {cleanContent && (
                     <ReactMarkdown remarkPlugins={[remarkGfm]}>{cleanContent}</ReactMarkdown>
                 )}
 
                 {/* 상세조회 의도일 때만 정책 카드를 렌더한다.
                     추천·검색·비교는 텍스트 답변만 표시. */}
-                {isDetailOnly && (
+                {isDetail && (
                     <PolicyResultList
                         policies={policies}
                         onSelectPolicy={currentUser ? setSelectedPolicy : undefined}
