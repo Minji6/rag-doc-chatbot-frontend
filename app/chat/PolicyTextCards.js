@@ -2,23 +2,18 @@
 
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { getDdayInfo, getUrgencyLevel } from "@/utils/policy";
+import { getDdayInfo, getUrgencyLevel, URGENCY } from "@/utils/policy";
 import { parseMarkdownPolicies } from "@/utils/parseMarkdownPolicies";
 
-// D-Day 배지 색상 — 화면에 표시되는 라벨을 기준으로 결정해 라벨↔색을 항상 일치시킨다.
-//   상시 → 파랑(달력과 동일) / 마감 → 회색 / 마감임박(D-7 이하) → 빨강 / 그 외 진행중 → 주황
-// (urgencyLevel의 "always"는 상시·마감·기한미상을 한데 묶어 색 결정에 부적합하므로 라벨을 우선한다.)
+// D-Day 배지 색상 — 달력 범례(URGENCY)와 같은 단일 출처에서 가져와 색을 통일한다.
+//   긴급 빨강 / 임박 주황 / 여유 초록 / 마감 회색 / 상시 파랑.
+// 표시 라벨(상시/마감)을 우선해 라벨↔색을 항상 일치시키고, 나머지는 urgencyLevel을 쓴다.
 function ddayBadgeStyle(label, urgencyLevel) {
-    if (label === "상시") {
-        return { background: "#EAF2FB", color: "#4A90D9" };  // 상시모집 파랑
-    }
-    if (label === "마감" || urgencyLevel === "expired") {
-        return { background: "#F3F4F6", color: "#9CA3AF" };  // 마감 회색
-    }
-    if (urgencyLevel === "urgent") {
-        return { background: "#E5484D", color: "#fff" };   // 마감임박 빨강
-    }
-    return { background: "#F59E3C", color: "#fff" };       // 진행중 주황
+    const key = label === "상시" ? "always"
+        : label === "마감" ? "expired"
+        : urgencyLevel;
+    const color = (URGENCY[key] ?? URGENCY.always).color;
+    return { background: `${color}1A`, color };  // 색상 + 10% 투명 배경
 }
 
 // URL을 클릭 가능한 링크로 변환
