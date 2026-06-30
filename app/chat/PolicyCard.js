@@ -52,7 +52,7 @@ function PolicyCard({ policy, index = 0, onDetail }) {
         ["참여 자격", targetText],
         ["신청 방법", aplyMthdCn],
         url ? ["신청 URL", (
-            <a href={url} target="_blank" rel="noreferrer" className="policy-card-url-link">
+            <a key="apply-url" href={url} target="_blank" rel="noreferrer" className="policy-card-url-link">
                 {url}
             </a>
         )] : null,
