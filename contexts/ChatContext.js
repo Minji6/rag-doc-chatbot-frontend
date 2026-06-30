@@ -14,6 +14,16 @@ function upsertConversation(conversations, conversationId, title) {
     return [{ conversation_id: conversationId, title: existing?.title ?? title }, ...rest]
 }
 
+// 백엔드는 이미지 첨부 턴의 사용자 메시지를
+//   "{원본 질문}\n\n[이미지 분석 결과]\n{분석 내용}" 형태로 저장한다(후속 턴 컨텍스트 복원용).
+// 대화 기록을 다시 불러올 때 이 마커 이후는 사용자에게 보일 필요가 없으므로 잘라낸다.
+const IMAGE_CONTEXT_MARKER = "\n\n[이미지 분석 결과]\n"
+function stripImageContext(content) {
+    if (typeof content !== "string") return content
+    const idx = content.indexOf(IMAGE_CONTEXT_MARKER)
+    return idx === -1 ? content : content.slice(0, idx).trimEnd()
+}
+
 /** 메시지 목록에 들어있는 첨부 미리보기 blob URL을 해제한다. */
 function revokeMessageImages(messages) {
     messages.forEach(m => {
@@ -83,7 +93,7 @@ export function ChatContextProvider({ children }) {
             if (latestSelectRef.current !== selectedConversationId) return
             const loaded = res.data.messages.map(m => ({
                 role: m.role === "human" ? "user" : "bot",
-                content: m.content,
+                content: m.role === "human" ? stripImageContext(m.content) : m.content,
             }))
             setMessages(prev => { revokeMessageImages(prev); return loaded })
         } catch (err) {
