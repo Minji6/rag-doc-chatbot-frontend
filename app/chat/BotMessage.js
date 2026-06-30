@@ -62,8 +62,8 @@ function BotMessage({ content, category = [], inquiry_type = [], policies = [], 
                     </div>
                 )}
 
-                {/* 상세조회는 카드가 답변 역할을 하므로 텍스트를 숨긴다. */}
-                {!isDetail && (
+                {/* 텍스트 메시지: 내용이 있으면 항상 표시. 상세조회는 카드 위 안내 멘트로 활용. */}
+                {cleanContent && (
                     <ReactMarkdown remarkPlugins={[remarkGfm]}>{cleanContent}</ReactMarkdown>
                 )}
 

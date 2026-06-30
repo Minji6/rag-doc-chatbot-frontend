@@ -5,6 +5,7 @@ function PolicyCard({ policy, onDetail, index = 0 }) {
         plcyNm,
         plcyExplnCn,
         plcySprtCn,
+        plcySprtCnSummary,
         ptcpPrpTrgtCn,
         aplyUrlAddr,
         sprtTrgtMinAge,
@@ -28,8 +29,11 @@ function PolicyCard({ policy, onDetail, index = 0 }) {
     if (ptcpPrpTrgtCn) targetParts.push(ptcpPrpTrgtCn);
     const targetText = targetParts.join(" · ") || null;
 
-    // 지원 내용은 description과 다를 때만 별도 행으로 표시
-    const supportContent = plcySprtCn && plcySprtCn !== description ? plcySprtCn : null;
+    // 지원 내용: LLM 정리본(상세조회 시)이 있으면 우선 사용, 없으면 원문 폴백.
+    // PolicyDetailModal의 "지원 내용"은 원문(plcySprtCn)을 그대로 유지한다.
+    const supportContent = plcySprtCnSummary
+        ? plcySprtCnSummary
+        : (plcySprtCn && plcySprtCn !== description ? plcySprtCn : null);
 
     const fields = [
         ["지원 내용", supportContent],
