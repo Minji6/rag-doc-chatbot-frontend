@@ -95,12 +95,12 @@ function PolicyDetailModal({ policy, onClose }) {
 
                 <div className="policy-detail-footer">
                     {enabled && (
-                        // 저장: 캘린더에 담고 패널을 연다. 이미 담겼으면 캘린더만 연다.
+                        // 저장 토글: 안 담겼으면 담고 캘린더를 연다. 이미 담겼으면 저장을 취소한다.
                         <button
                             className={`policy-detail-save-btn ${saved ? "saved" : ""}`}
                             onClick={() => {
-                                if (!saved) toggle(policy);
-                                openCalendar();
+                                toggle(policy);
+                                if (!saved) openCalendar();  // 새로 저장할 때만 캘린더 열기
                             }}
                         >
                             <svg width="15" height="15" viewBox="0 0 24 24" fill={saved ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
