@@ -10,10 +10,11 @@ function Sidebar({ conversations = [], activeId, onSelectChat, onNewChat, onDele
         <div className="sidebar">
             <button className="sidebar-logo" onClick={onNewChat}>
                 {logoOk ? (
-                    /* eslint-disable-next-line @next/next/no-img-element */
-                    <img
+                    <Image
                         src="/letter-logo2.png"
                         alt="청포도"
+                        width={130}
+                        height={40}
                         className="sidebar-letter-logo"
                         onError={() => setLogoOk(false)}
                     />
