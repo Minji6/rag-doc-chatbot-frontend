@@ -1,8 +1,5 @@
 import { getDdayInfo, getUrgencyLevel } from "@/utils/policy";
 
-// 번호 · 레이블에 쓰는 단일 accent 색상 — globals.css의 --primary(그린) 계열
-const ACCENT_COLOR = "var(--primary)";
-
 // D-Day 배지 색상 — 마감 상태별 구분 (PolicyTextCards와 동일 규칙).
 //   마감임박(D-7 이하) → 빨강 / 진행중 → 주황 / 마감됨·상시 → 회색
 function ddayBadgeStyle(urgencyLevel, muted) {
@@ -15,7 +12,7 @@ function ddayBadgeStyle(urgencyLevel, muted) {
     return { background: "#F59E3C", color: "#fff" };
 }
 
-function PolicyCard({ policy, index = 0, onDetail }) {
+function PolicyCard({ policy, onDetail }) {
     const {
         plcyNm,
         plcyExplnCn,
@@ -31,7 +28,6 @@ function PolicyCard({ policy, index = 0, onDetail }) {
 
     const dday = getDdayInfo(policy);
     const urgencyLevel = getUrgencyLevel(policy);
-    const accentColor = ACCENT_COLOR;
     const url = aplyUrlAddr?.trim();
 
     // 요약: plcyExplnCn 우선, 없으면 plcySprtCn
@@ -68,11 +64,8 @@ function PolicyCard({ policy, index = 0, onDetail }) {
 
     return (
         <div className="policy-card">
-            {/* 번호 · 제목 · D-Day 행 */}
+            {/* 제목 · D-Day 행 */}
             <div className="policy-card-title-row">
-                <span className="policy-card-number" style={{ color: accentColor }}>
-                    {index + 1}.
-                </span>
                 <span className="policy-card-name">{plcyNm}</span>
                 {dday && (
                     <span className="policy-card-dday" style={ddayStyle}>
