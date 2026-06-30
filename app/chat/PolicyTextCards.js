@@ -5,15 +5,15 @@ import remarkGfm from "remark-gfm";
 import { getDdayInfo, getUrgencyLevel } from "@/utils/policy";
 import { parseMarkdownPolicies } from "@/utils/parseMarkdownPolicies";
 
-// D-Day 배지 색상 — 마감 상태별로 구분.
-//   마감임박(D-7 이하) → 빨강 / 진행중 → 주황 / 상시 → 파랑(달력과 동일) / 마감됨 → 회색
-function ddayBadgeStyle(urgencyLevel, muted) {
-    if (urgencyLevel === "always") {
-        // 상시모집은 달력 범례와 같은 파랑(URGENCY.always)으로 통일.
-        return { background: "#EAF2FB", color: "#4A90D9" };
+// D-Day 배지 색상 — 화면에 표시되는 라벨을 기준으로 결정해 라벨↔색을 항상 일치시킨다.
+//   상시 → 파랑(달력과 동일) / 마감 → 회색 / 마감임박(D-7 이하) → 빨강 / 그 외 진행중 → 주황
+// (urgencyLevel의 "always"는 상시·마감·기한미상을 한데 묶어 색 결정에 부적합하므로 라벨을 우선한다.)
+function ddayBadgeStyle(label, urgencyLevel) {
+    if (label === "상시") {
+        return { background: "#EAF2FB", color: "#4A90D9" };  // 상시모집 파랑
     }
-    if (muted || urgencyLevel === "expired") {
-        return { background: "#F3F4F6", color: "#9CA3AF" };
+    if (label === "마감" || urgencyLevel === "expired") {
+        return { background: "#F3F4F6", color: "#9CA3AF" };  // 마감 회색
     }
     if (urgencyLevel === "urgent") {
         return { background: "#E5484D", color: "#fff" };   // 마감임박 빨강
@@ -77,7 +77,7 @@ function PolicyTextCards({ content, policies = [], category = [] }) {
                     const meta = policies[i];
                     const dday = meta ? getDdayInfo(meta) : null;
                     const urgencyLevel = meta ? getUrgencyLevel(meta) : "always";
-                    const ddayStyle = ddayBadgeStyle(urgencyLevel, dday?.muted);
+                    const ddayStyle = ddayBadgeStyle(dday?.label, urgencyLevel);
 
                     return (
                         <div key={i} className="policy-card">
