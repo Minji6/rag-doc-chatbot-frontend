@@ -3,6 +3,7 @@
 import { createPortal } from "react-dom";
 import { categoryStyle, getDdayInfo, formatApplyPeriod } from "@/utils/policy";
 import { useSavedPolicies } from "@/contexts/SavedPoliciesContext";
+import { CloseIcon } from "@/app/components/CloseIcon";
 
 /**
  * 정책 상세 모달 (로그인 유저가 카드의 "자세히 보기"를 눌렀을 때).
@@ -63,7 +64,9 @@ function PolicyDetailModal({ policy, onClose }) {
                         >
                             {category}
                         </span>
-                        <button className="modal-close-btn" onClick={onClose}>✕</button>
+                        <button className="modal-close-btn" onClick={onClose}>
+                            <CloseIcon size={16} />
+                        </button>
                     </div>
                     <h3 className="policy-detail-title">{plcyNm}</h3>
                     {dday && (
@@ -92,7 +95,10 @@ function PolicyDetailModal({ policy, onClose }) {
                                 openCalendar();
                             }}
                         >
-                            {saved ? "🔖 저장됨" : "🔖 저장"}
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill={saved ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/>
+                            </svg>
+                            {saved ? "저장됨" : "저장"}
                         </button>
                     )}
                     {url ? (

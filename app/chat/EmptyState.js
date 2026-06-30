@@ -7,11 +7,11 @@ const CATEGORY_TILES = [
     {
         key: "welfare",
         icon: "🫶",
-        label: "복지",
+        label: "복지문화",
         sub: "생활·자산·심리 지원",
         colorVar: "--color-welfare",
         bgVar: "--color-welfare-bg",
-        prompt: "복지 분야 청년 정책 추천해줘",
+        prompt: "복지문화 분야 청년 정책 추천해줘",
     },
     {
         key: "housing",

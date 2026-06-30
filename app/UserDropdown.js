@@ -33,13 +33,17 @@ export default function UserDropdown() {
   return (
     <>
       <button className="user-dropdown-btn" onClick={() => setShowModal(true)}>
-        <Image
-          src="/cheongpodo.png"
-          alt="avatar"
-          width={26}
-          height={26}
-          className="user-dropdown-avatar"
-        />
+        {currentUser ? (
+          <Image
+            src="/cheongpodo.png"
+            alt="avatar"
+            width={26}
+            height={26}
+            className="user-dropdown-avatar"
+          />
+        ) : (
+          <span className="user-dropdown-guest-icon">👤</span>
+        )}
         {currentUser ? currentUser.nickname : "게스트"}
         <span className="dropdown-arrow">▾</span>
       </button>
