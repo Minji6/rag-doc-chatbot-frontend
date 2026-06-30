@@ -80,6 +80,20 @@ export const URGENCY = {
 };
 
 /**
+ * D-Day 배지 인라인 스타일 — 달력 범례(URGENCY)와 같은 단일 출처에서 색을 가져온다.
+ * 표시 라벨(상시/마감)을 우선해 라벨↔색을 항상 일치시키고, 나머지는 urgencyLevel을 쓴다.
+ * @param {string} label        - getDdayInfo의 label ("상시" | "마감" | "D-30" 등)
+ * @param {string} urgencyLevel - getUrgencyLevel의 반환 키 (urgent|soon|relaxed|expired|always)
+ */
+export function getDdayBadgeStyle(label, urgencyLevel) {
+    const key = label === "상시" ? "always"
+        : label === "마감" ? "expired"
+        : urgencyLevel;
+    const color = (URGENCY[key] ?? URGENCY.always).color;
+    return { background: `${color}1A`, color };  // 색상 + 10% 투명 배경
+}
+
+/**
  * 정책의 임박도 단계 키를 반환 (URGENCY의 키).
  * 마감일이 지난 정책은 "expired"로 분리한다 — getDdayInfo가 같은 정책을 "마감"
  * 배지로 표시하므로, 이를 "always"(상시 회색)로 묶으면 도트/테두리 색과
