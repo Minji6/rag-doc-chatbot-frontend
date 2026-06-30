@@ -1,4 +1,29 @@
 /* ============================================================
+   목차 (각 섹션은 아래 동일한 ===== 배너로 구분)
+   ------------------------------------------------------------
+   1.  Design Token            — CSS 변수(색상/토큰)
+   2.  전체 앱 레이아웃         — .app-layout
+   3.  Sidebar                  — 대화 목록 사이드바
+   4.  ErrorMessage            — 상단 에러 바
+   5.  ChatWindow              — 채팅 영역 래퍼/헤더
+   6.  MessageList             — 메시지 스크롤 영역
+   7.  UserMessage / BotMessage 공통 — 말풍선
+   8.  AnalysisBadge           — 분석/분야/의도 배지
+   9.  PolicyCard              — 정책 카드(텍스트 파싱)
+   10. PolicyDetailModal       — 정책 상세 모달
+   11. ChatInput               — 입력창/첨부
+   12. UserDropdown            — 헤더 사용자 버튼
+   13. EmptyState              — 웰컴 화면
+   14. Suggestions             — follow-up 질문 버튼
+   15. BotMessage Markdown     — 마크다운 렌더 스타일
+   16. UserProfileModal        — 사용자 선택/등록 모달
+   17. Sidebar chat item delete— 대화 삭제 버튼
+   18. Responsive              — @media (max-width: 768px)
+   19. TypingIndicator         — 타이핑 점 애니메이션
+   20. PolicyCalendar          — 저장 정책 캘린더
+   ============================================================ */
+
+/* ============================================================
    Design Token (Light Mode – 청포도)
    ============================================================ */
 :root {
@@ -152,14 +177,6 @@ body {
 .sidebar-chat-list::-webkit-scrollbar-thumb {
   background-color: var(--border);
   border-radius: 4px;
-}
-
-.sidebar-date-label {
-  font-size: 11px;
-  color: var(--text-muted);
-  padding: 10px 8px 4px;
-  font-weight: 600;
-  letter-spacing: 0.3px;
 }
 
 .sidebar-chat-item {
@@ -424,14 +441,6 @@ body {
   margin-bottom: 7px;
 }
 
-/* 번호 (카테고리별 accent 색상은 인라인 style로 주입) */
-.policy-card-number {
-  font-size: 13px;
-  font-weight: 800;
-  flex-shrink: 0;
-  line-height: 1;
-}
-
 /* 정책명 */
 .policy-card-name {
   font-size: 15.5px;
@@ -579,10 +588,6 @@ body {
   font-size: 13px;
   font-weight: 700;
   color: var(--dday-urgent);
-}
-
-.policy-detail-dday.always-open {
-  color: var(--text-muted);
 }
 
 .policy-detail-body {
@@ -809,10 +814,6 @@ body {
 /* ============================================================
    UserDropdown
    ============================================================ */
-.user-dropdown {
-  position: relative;
-}
-
 .user-dropdown-btn {
   display: flex;
   align-items: center;
@@ -843,88 +844,6 @@ body {
   font-size: 10px;
   opacity: 0.5;
   margin-left: 2px;
-}
-
-.user-dropdown-menu {
-  position: absolute;
-  right: 0;
-  top: calc(100% + 6px);
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(90, 168, 44, 0.12);
-  min-width: 200px;
-  padding: 6px 0;
-  list-style: none;
-  z-index: 200;
-}
-
-.user-dropdown-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  width: 100%;
-  padding: 8px 14px;
-  background: none;
-  border: none;
-  text-align: left;
-  font-size: 13px;
-  color: var(--text);
-  cursor: pointer;
-  transition: background 0.1s;
-}
-
-.user-dropdown-item:hover {
-  background: var(--surface-sub);
-}
-
-.user-dropdown-item.active {
-  color: var(--primary);
-}
-
-.user-dropdown-item.active .dropdown-item-check {
-  display: block;
-}
-
-.dropdown-item-check {
-  display: none;
-  margin-left: auto;
-  color: var(--primary);
-  font-size: 14px;
-}
-
-.user-dropdown-item-avatar {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  object-fit: cover;
-  flex-shrink: 0;
-}
-
-.user-dropdown-item-info {
-  flex: 1;
-}
-
-.user-dropdown-item-name {
-  font-weight: 500;
-  font-size: 13px;
-  color: inherit;
-}
-
-.user-dropdown-item-sub {
-  font-size: 11px;
-  color: var(--text-muted);
-  margin-top: 1px;
-}
-
-.user-dropdown-item.guest-item {
-  color: var(--text-muted);
-}
-
-.dropdown-divider {
-  height: 1px;
-  background: var(--border);
-  margin: 4px 0;
 }
 
 /* ============================================================
@@ -1404,13 +1323,6 @@ body {
 .modal-submit-btn:hover { opacity: 0.88; }
 .modal-submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-.modal-submit-error {
-  color: #e53e3e;
-  font-size: 0.85rem;
-  margin-bottom: 8px;
-  text-align: center;
-}
-
 /* ============================================================
    Sidebar chat item delete button
    ============================================================ */
@@ -1454,31 +1366,6 @@ body {
   color: var(--text-muted);
   text-align: center;
   padding: 20px 0;
-}
-
-/* ============================================================
-   User delete button in dropdown
-   ============================================================ */
-.user-delete-btn {
-  display: none;
-  background: none;
-  border: none;
-  color: var(--text-muted);
-  font-size: 11px;
-  cursor: pointer;
-  padding: 2px 5px;
-  border-radius: 4px;
-  margin-left: auto;
-  line-height: 1;
-}
-
-.user-dropdown-item:hover .user-delete-btn {
-  display: block;
-}
-
-.user-delete-btn:hover {
-  background-color: var(--border);
-  color: var(--text);
 }
 
 /* ============================================================
