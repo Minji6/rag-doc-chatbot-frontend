@@ -8,27 +8,38 @@ import remarkGfm from "remark-gfm";
 import { useAuth } from "@/contexts/AuthContext";
 import { CATEGORY_STYLE } from "@/utils/policy";
 import PolicyResultList from "@/app/chat/PolicyResultList";
+import PolicyTextCards from "@/app/chat/PolicyTextCards";
 import PolicyDetailModal from "@/app/chat/PolicyDetailModal";
 
 // LLM이 본문 뒤에 suggestions를 덧붙였을 때 제거.
-// separator(---SUGGESTIONS---) 기준으로만 잘라낸다. 과거엔 JSON 배열 패턴까지
-// 휴리스틱으로 제거했으나, 본문에 포함된 코드 예시·일반 텍스트의 대괄호 배열을
-// 오인해 정상 답변을 무음 삭제하는 위험이 있어 separator 기반으로 한정한다.
 function stripEmbeddedSuggestions(text) {
     return (text ?? "").replace(/---SUGGESTIONS---[\s\S]*$/m, "").trimEnd();
 }
 
 function BotMessage({ content, category = [], inquiry_type = [], policies = [], suggestions = [], onSelectQuestion }) {
     const { currentUser } = useAuth();
-    // 상세 모달은 BotMessage가 소유한다 — 각 답변 메시지가 독립적으로 모달 상태를 가진다.
+    // 상세 모달은 각 답변 메시지가 독립적으로 소유한다.
     const [selectedPolicy, setSelectedPolicy] = useState(null);
 
     // 백엔드가 inquiry_type을 배열로 반환하므로 배열/문자열 모두 처리
     const types = Array.isArray(inquiry_type) ? inquiry_type : (inquiry_type ? [inquiry_type] : []);
-    const isDetail = types.includes("상세조회");
-
     const hasAnalysis = category.length > 0 || types.length > 0;
     const cleanContent = stripEmbeddedSuggestions(content);
+
+    // ── 렌더 분기 ──────────────────────────────────────────────────
+    // 상세조회: 텍스트 없음, 구조화 데이터로 PolicyResultList
+    const isDetailOnly = types.length === 1 && types[0] === "상세조회";
+    // 비교: 비교표가 핵심 → ReactMarkdown 그대로
+    const isCompareOnly = types.length === 1 && types[0] === "비교";
+
+    // 텍스트에 ### 정책 블록이 있고 비교/상세조회가 아닐 때 → PolicyTextCards.
+    // 주의: "### " 헤더에만 의존하므로 LLM이 포맷을 바꾸면 false가 되어
+    //       카드 대신 아래 showPlainText(ReactMarkdown)로 자연스럽게 fallback된다.
+    const hasPolicyBlocks = /^### /m.test(cleanContent);
+    const showTextCards = !isDetailOnly && !isCompareOnly && hasPolicyBlocks;
+
+    // 그 외 일반 텍스트 (추천·비교·일반대화)
+    const showPlainText = !isDetailOnly && !showTextCards;
 
     return (
         <div className="message-row bot">
@@ -63,18 +74,27 @@ function BotMessage({ content, category = [], inquiry_type = [], policies = [], 
                     </div>
                 )}
 
-                {/* 텍스트 메시지: 내용이 있으면 항상 표시. 상세조회는 카드 위 안내 멘트로 활용. */}
-                {cleanContent && (
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{cleanContent}</ReactMarkdown>
+                {/* 상세조회: 카드 위 안내 멘트(composer 메시지, 있으면) + 구조화 데이터 카드 */}
+                {isDetailOnly && (
+                    <>
+                        {cleanContent && (
+                            <ReactMarkdown remarkPlugins={[remarkGfm]}>{cleanContent}</ReactMarkdown>
+                        )}
+                        <PolicyResultList
+                            policies={policies}
+                            onSelectPolicy={currentUser ? setSelectedPolicy : undefined}
+                        />
+                    </>
                 )}
 
-                {/* 상세조회 의도일 때만 정책 카드를 렌더한다.
-                    추천·검색·비교는 텍스트 답변만 표시. */}
-                {isDetail && (
-                    <PolicyResultList
-                        policies={policies}
-                        onSelectPolicy={currentUser ? setSelectedPolicy : undefined}
-                    />
+                {/* 검색·복합: 백엔드 텍스트 파싱 → 카드 */}
+                {showTextCards && (
+                    <PolicyTextCards content={cleanContent} policies={policies} category={category} />
+                )}
+
+                {/* 추천·비교·일반대화: 마크다운 그대로 */}
+                {showPlainText && (
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{cleanContent}</ReactMarkdown>
                 )}
 
                 {suggestions.length > 0 && (

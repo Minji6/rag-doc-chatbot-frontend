@@ -1,6 +1,18 @@
-import { getDdayInfo } from "@/utils/policy";
+import { getDdayInfo, getUrgencyLevel } from "@/utils/policy";
 
-function PolicyCard({ policy, onDetail, index = 0 }) {
+// D-Day 배지 색상 — 마감 상태별 구분 (PolicyTextCards와 동일 규칙).
+//   마감임박(D-7 이하) → 빨강 / 진행중 → 주황 / 마감됨·상시 → 회색
+function ddayBadgeStyle(urgencyLevel, muted) {
+    if (muted || urgencyLevel === "expired" || urgencyLevel === "always") {
+        return { background: "#F3F4F6", color: "#9CA3AF" };
+    }
+    if (urgencyLevel === "urgent") {
+        return { background: "#E5484D", color: "#fff" };
+    }
+    return { background: "#F59E3C", color: "#fff" };
+}
+
+function PolicyCard({ policy, onDetail }) {
     const {
         plcyNm,
         plcyExplnCn,
@@ -12,16 +24,16 @@ function PolicyCard({ policy, onDetail, index = 0 }) {
         sprtTrgtMaxAge,
         sprtTrgtAgeLmtYn,
         aplyMthdCn,
-        cnsgNmCn,
     } = policy;
 
     const dday = getDdayInfo(policy);
+    const urgencyLevel = getUrgencyLevel(policy);
     const url = aplyUrlAddr?.trim();
 
-    // 설명은 plcyExplnCn 우선, 없으면 plcySprtCn
-    const description = plcyExplnCn || plcySprtCn;
+    // 요약: plcyExplnCn 우선, 없으면 plcySprtCn
+    const summary = plcyExplnCn || plcySprtCn;
 
-    // 신청 대상: 연령 + 참여 대상 조합
+    // 참여 자격: 연령 + 참여 대상
     const targetParts = [];
     if (sprtTrgtAgeLmtYn === "Y" && sprtTrgtMinAge && sprtTrgtMaxAge) {
         targetParts.push(`만 ${sprtTrgtMinAge}~${sprtTrgtMaxAge}세`);
@@ -29,61 +41,72 @@ function PolicyCard({ policy, onDetail, index = 0 }) {
     if (ptcpPrpTrgtCn) targetParts.push(ptcpPrpTrgtCn);
     const targetText = targetParts.join(" · ") || null;
 
-    // 지원 내용: LLM 정리본(상세조회 시)이 있으면 우선 사용, 없으면 원문 폴백.
+    // 지원 내용: LLM 정리본(상세조회 시 plcySprtCnSummary)이 있으면 우선 사용,
+    // 없으면 원문(plcySprtCn)을 summary와 다를 때만 폴백 표시.
     // PolicyDetailModal의 "지원 내용"은 원문(plcySprtCn)을 그대로 유지한다.
     const supportContent = plcySprtCnSummary
         ? plcySprtCnSummary
-        : (plcySprtCn && plcySprtCn !== description ? plcySprtCn : null);
+        : (plcySprtCn && plcySprtCn !== summary ? plcySprtCn : null);
 
     const fields = [
         ["지원 내용", supportContent],
-        ["신청 대상", targetText],
+        ["참여 자격", targetText],
         ["신청 방법", aplyMthdCn],
-        ["문의처",   cnsgNmCn],
-    ].filter(([, v]) => v);
+        url ? ["신청 URL", (
+            <a key="apply-url" href={url} target="_blank" rel="noreferrer" className="policy-card-url-link">
+                {url}
+            </a>
+        )] : null,
+    ].filter(Boolean).filter(([, v]) => v);
+
+    // D-Day 배지 스타일 — 긴급도별 색상
+    const ddayStyle = ddayBadgeStyle(urgencyLevel, dday?.muted);
 
     return (
         <div className="policy-card">
+            {/* 제목 · D-Day 행 */}
             <div className="policy-card-title-row">
                 <span className="policy-card-name">{plcyNm}</span>
                 {dday && (
-                    <span className={`policy-card-dday${dday.muted ? " always-open" : ""}`}>
+                    <span className="policy-card-dday" style={ddayStyle}>
                         {dday.label}
                     </span>
                 )}
             </div>
 
-            {description && (
-                <p className="policy-card-desc">{description}</p>
+            {/* 요약 */}
+            {summary && (
+                <p className="policy-card-summary">{summary}</p>
             )}
 
+            {/* 필드 행 */}
             {fields.length > 0 && (
                 <div className="policy-card-fields">
                     {fields.map(([label, value]) => (
                         <div key={label} className="policy-card-field-row">
-                            <span className="policy-card-field-label">{label}</span>
+                            <span className="policy-card-field-label">
+                                {label}
+                            </span>
                             <span className="policy-card-field-value">{value}</span>
                         </div>
                     ))}
                 </div>
             )}
 
-            <div className="policy-card-footer">
-                <span />
-                {onDetail ? (
-                    <button type="button" className="policy-card-link" onClick={() => onDetail(policy)}>
-                        자세히 보기 →
-                    </button>
-                ) : url ? (
-                    <a href={url} target="_blank" rel="noreferrer" className="policy-card-link">
-                        자세히 보기 →
-                    </a>
-                ) : (
-                    <span className="policy-card-link" style={{ color: "var(--border)" }}>
-                        자세히 보기 →
-                    </span>
-                )}
-            </div>
+            {/* 상세 진입점: onDetail 주입 시 모달, 아니면 신청 URL로 이동 */}
+            {(onDetail || url) && (
+                <div className="policy-card-footer">
+                    {onDetail ? (
+                        <button type="button" className="policy-card-link" onClick={() => onDetail(policy)}>
+                            자세히 보기 →
+                        </button>
+                    ) : (
+                        <a href={url} target="_blank" rel="noreferrer" className="policy-card-link">
+                            자세히 보기 →
+                        </a>
+                    )}
+                </div>
+            )}
         </div>
     );
 }
