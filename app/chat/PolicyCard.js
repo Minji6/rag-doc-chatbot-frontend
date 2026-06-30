@@ -45,7 +45,6 @@ function PolicyCard({ policy, onDetail, index = 0 }) {
     return (
         <div className="policy-card">
             <div className="policy-card-title-row">
-                <span className="policy-card-number">{index + 1}.</span>
                 <span className="policy-card-name">{plcyNm}</span>
                 {dday && (
                     <span className={`policy-card-dday${dday.muted ? " always-open" : ""}`}>
