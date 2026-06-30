@@ -94,6 +94,10 @@ export function ChatContextProvider({ children }) {
             const loaded = res.data.messages.map(m => ({
                 role: m.role === "human" ? "user" : "bot",
                 content: m.role === "human" ? stripImageContext(m.content) : m.content,
+                category: m.category ?? [],
+                inquiry_type: m.inquiry_type ?? "",
+                policies: m.policies ?? [],
+                suggestions: m.suggestions ?? [],
             }))
             setMessages(prev => { revokeMessageImages(prev); return loaded })
         } catch (err) {
