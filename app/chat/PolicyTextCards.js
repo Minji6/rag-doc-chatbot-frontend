@@ -21,6 +21,13 @@ function ddayBadgeStyle(urgencyLevel, muted) {
     return { background: "#F59E3C", color: "#fff" };       // 진행중 주황
 }
 
+// 자격 항목 필드 행 스타일 — label의 앞 아이콘으로 색상 결정 (⚠️/❌)
+function eligibilityRowStyle(label) {
+    if (label.startsWith("⚠️")) return { color: "#B45309", fontWeight: 600 };
+    if (label.startsWith("❌")) return { color: "#B91C1C", fontWeight: 600 };
+    return {};
+}
+
 // URL을 클릭 가능한 링크로 변환
 function renderValue(value) {
     const urlRegex = /https?:\/\/[^\s]+/g;
@@ -99,16 +106,16 @@ function PolicyTextCards({ content, policies = [], category = [] }) {
                             {/* 필드 행 */}
                             {fields.length > 0 && (
                                 <div className="policy-card-fields">
-                                    {fields.map(({ label, value }) => (
-                                        <div key={label} className="policy-card-field-row">
-                                            <span className="policy-card-field-label">
-                                                {label}
-                                            </span>
-                                            <span className="policy-card-field-value">
-                                                {renderValue(value)}
-                                            </span>
-                                        </div>
-                                    ))}
+                                    {fields.map(({ label, value }, idx) => {
+                                        const isEligibility = label.startsWith("⚠️") || label.startsWith("❌");
+                                        const rowStyle = isEligibility ? eligibilityRowStyle(label) : {};
+                                        return (
+                                            <div key={`${idx}-${label}`} className="policy-card-field-row" style={rowStyle}>
+                                                <span className="policy-card-field-label">{label}</span>
+                                                <span className="policy-card-field-value">{renderValue(value)}</span>
+                                            </div>
+                                        );
+                                    })}
                                 </div>
                             )}
                         </div>

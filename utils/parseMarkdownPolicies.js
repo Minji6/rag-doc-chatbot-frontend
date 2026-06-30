@@ -30,7 +30,7 @@ export function parseMarkdownPolicies(text) {
     const parts = cleaned.split(/(?=^### )/m);
 
     // 도입부: ## 분야 헤더 제거 후 남은 텍스트
-    const intro = (parts[0] ?? "")
+    let intro = (parts[0] ?? "")
         .replace(/^## .+$/gm, "")
         .trim();
 
@@ -43,6 +43,12 @@ export function parseMarkdownPolicies(text) {
         // 첫 줄: ### 정책명
         const name = lines[0].replace(/^### /, "").trim();
         if (!name) continue;
+
+        // 자격 판정/확인/진단 결과 블록은 카드가 아닌 intro 텍스트로 처리 (카드 위에 마크다운으로 렌더링)
+        if (/자격.*(결과|판정|확인|진단)|(결과|판정|확인|진단).*자격/.test(name)) {
+            intro = (intro ? intro + "\n\n" : "") + block.trim();
+            continue;
+        }
 
         let summary = "";          // 개요 필드 또는 첫 단락
         const fields = [];
