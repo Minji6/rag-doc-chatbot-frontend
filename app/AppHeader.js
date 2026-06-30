@@ -1,4 +1,4 @@
-import UserDropdown from "./UserDropdown"
+import UserDropdown from "@/app/components/UserDropdown"
 
 export default function AppHeader({ title = "새 대화", subtitle = "맞춤형 청년 정책 추천" }) {
   return (
