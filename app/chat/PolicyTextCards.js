@@ -13,7 +13,7 @@ const ACCENT_BY_CATEGORY = {
     교육: "#8A6CFF",
     일자리: "#F59E3C",
 };
-const DEFAULT_ACCENT = "#5AA82C";
+const DEFAULT_ACCENT = "var(--primary)"; // globals.css의 --primary와 동일
 
 function pickAccent(category) {
     const cats = Array.isArray(category) ? category : category ? [category] : [];

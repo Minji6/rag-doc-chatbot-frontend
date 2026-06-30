@@ -1,7 +1,7 @@
 import { getDdayInfo, getUrgencyLevel } from "@/utils/policy";
 
-// 번호 · 레이블에 쓰는 단일 accent 색상 — 앱 primary(그린) 계열
-const ACCENT_COLOR = "#5AA82C";
+// 번호 · 레이블에 쓰는 단일 accent 색상 — globals.css의 --primary(그린) 계열
+const ACCENT_COLOR = "var(--primary)";
 
 // D-Day 배지 색상 — 마감 상태별 구분 (PolicyTextCards와 동일 규칙).
 //   마감임박(D-7 이하) → 빨강 / 진행중 → 주황 / 마감됨·상시 → 회색

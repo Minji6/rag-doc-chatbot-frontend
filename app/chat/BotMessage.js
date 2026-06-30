@@ -32,7 +32,9 @@ function BotMessage({ content, category = [], inquiry_type = "", policies = [], 
     // 비교: 비교표가 핵심 → ReactMarkdown 그대로
     const isCompareOnly = types.length === 1 && types[0] === "비교";
 
-    // 텍스트에 ### 정책 블록이 있고 비교/상세조회가 아닐 때 → PolicyTextCards
+    // 텍스트에 ### 정책 블록이 있고 비교/상세조회가 아닐 때 → PolicyTextCards.
+    // 주의: "### " 헤더에만 의존하므로 LLM이 포맷을 바꾸면 false가 되어
+    //       카드 대신 아래 showPlainText(ReactMarkdown)로 자연스럽게 fallback된다.
     const hasPolicyBlocks = /^### /m.test(cleanContent);
     const showTextCards = !isDetailOnly && !isCompareOnly && hasPolicyBlocks;
 
