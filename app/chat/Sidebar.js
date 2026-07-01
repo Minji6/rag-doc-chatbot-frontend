@@ -13,10 +13,9 @@ function Sidebar({ conversations = [], activeId, onSelectChat, onNewChat, onDele
                     <Image
                         src="/letter-logo2.png"
                         alt="청포도"
-                        width={130}
-                        height={40}
+                        width={748}
+                        height={333}
                         className="sidebar-letter-logo"
-                        style={{ width: "auto", height: "auto" }}
                         onError={() => setLogoOk(false)}
                     />
                 ) : (

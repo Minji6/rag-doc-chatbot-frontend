@@ -62,15 +62,36 @@ export function ChatContextProvider({ children }) {
         let cancelled = false
         handleNewChat()
         if (!currentUser) {
-            // 로그아웃 직후엔 직전 유저의 목록을 비운다.
-            // (게스트 세션 중 쌓인 목록은 currentUser가 계속 없으므로 이 effect가 다시 돌지 않아 보존된다.)
             setConversations([])
             return
         }
+        const userId = String(currentUser.user_id)
         chatApi.getConversations(currentUser.user_id)
-            .then(res => { if (!cancelled) setConversations(withTitles(currentUser.user_id, res.data)) })
+            .then(res => {
+                if (cancelled) return
+                const withCached = withTitles(currentUser.user_id, res.data)
+                setConversations(withCached)
+
+                // 캐시에 제목이 없는 대화방은 히스토리에서 첫 사용자 메시지를 가져와 제목 보완.
+                // 유저 전환 직후 모든 항목이 "새 대화"로 보이는 문제 해결.
+                const untitled = withCached.filter(c => !c.title || c.title === "새 대화")
+                untitled.forEach(async (c) => {
+                    try {
+                        const histRes = await chatApi.getHistory(c.conversation_id, "user", userId)
+                        if (cancelled) return
+                        const firstUserMsg = (histRes.data.messages ?? []).find(m => m.role === "human")
+                        if (!firstUserMsg?.content) return
+                        const title = deriveTitle(stripImageContext(firstUserMsg.content))
+                        rememberTitle(currentUser.user_id, c.conversation_id, title)
+                        setConversations(prev => prev.map(conv =>
+                            conv.conversation_id === c.conversation_id ? { ...conv, title } : conv
+                        ))
+                    } catch {
+                        // 개별 실패는 무시 — "새 대화"로 남아도 무방
+                    }
+                })
+            })
             .catch(err => console.error("대화 목록 조회 실패", err))
-        // 유저가 빠르게 바뀌면 이전 요청의 응답이 늦게 도착해 새 상태를 덮어쓰는 것을 방지
         return () => { cancelled = true }
     }, [currentUser?.user_id, handleNewChat])
 
@@ -100,6 +121,21 @@ export function ChatContextProvider({ children }) {
                 suggestions: m.suggestions ?? [],
             }))
             setMessages(prev => { revokeMessageImages(prev); return loaded })
+
+            // 유저 전환 후 캐시가 비어있을 때: 히스토리의 첫 사용자 메시지로 제목 보완.
+            // rememberTitle은 이미 캐시된 항목은 건드리지 않으므로 중복 쓰기 안전.
+            if (currentUser) {
+                const firstUserContent = loaded.find(m => m.role === "user")?.content
+                if (firstUserContent) {
+                    const title = deriveTitle(firstUserContent)
+                    rememberTitle(currentUser.user_id, selectedConversationId, title)
+                    setConversations(prev => prev.map(c =>
+                        c.conversation_id === selectedConversationId && (!c.title || c.title === "새 대화")
+                            ? { ...c, title }
+                            : c
+                    ))
+                }
+            }
         } catch (err) {
             console.error("대화 기록 로드 실패", err)
             setError("대화 기록을 불러오지 못했습니다.")
