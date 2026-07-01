@@ -107,3 +107,21 @@ export function getUrgencyLevel(policy) {
     if (days <= 21) return "soon";
     return "relaxed";
 }
+
+/**
+ * 자격 검증(policy.eligibility) 표시용 매핑 — 상세 모달의 '자격 검증' 섹션 단일 출처.
+ * 백엔드 build_eligibility_report의 status/items[].status 값과 1:1로 대응한다.
+ */
+// 전체 신청 가능 여부 배지 (🟢 가능 / 🟡 일부 충족 / 🔴 대상 아님)
+export const ELIGIBILITY_STATUS = {
+    eligible:   { icon: "🟢", label: "신청 가능",              tone: "eligible" },
+    partial:    { icon: "🟡", label: "일부 조건을 충족했습니다", tone: "partial" },
+    ineligible: { icon: "🔴", label: "신청 대상이 아닙니다",     tone: "ineligible" },
+};
+
+// 조건별 상태 아이콘 (✅ 충족 / ❌ 미충족 / ⚠️ 확인 불가)
+export const CONDITION_STATUS_ICON = {
+    met: "✅",
+    unmet: "❌",
+    unknown: "⚠️",
+};
