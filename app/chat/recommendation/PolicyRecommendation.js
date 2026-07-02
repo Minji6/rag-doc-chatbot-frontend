@@ -14,16 +14,18 @@ const SORT_MODES = [
  * 정책추천 의도 전용 결과 뷰.
  * 헤더(건수 + 정렬 토글) → 1순위 하이라이트 카드 → 2순위 이하 목록.
  *
- * 점수는 백엔드 추천 순서(배열 순서)에서 파생한 표현용 값이라,
- * 마감임박순으로 재정렬해도 각 정책의 점수는 원래 순위 기준으로 유지된다.
+ * 점수는 백엔드가 실어 보내는 suitability_score(적합도)를 그대로 쓴다.
+ * 멀티 분야 응답은 분야별로 이어붙여 오므로, 매칭순 정렬은 점수 기준으로 다시 정렬한다.
  */
 function PolicyRecommendation({ policies = [], onSelectPolicy }) {
     const [sortMode, setSortMode] = useState("match");
 
     if (!policies.length) return null;
 
-    const ranked = policies.map((policy, i) => ({ policy, score: getMatchScore(i) }));
-    const sorted = sortMode === "deadline" ? sortByDeadline(ranked) : ranked;
+    const ranked = policies.map((policy, i) => ({ policy, score: getMatchScore(policy, i) }));
+    const sorted = sortMode === "deadline"
+        ? sortByDeadline(ranked)
+        : [...ranked].sort((a, b) => b.score - a.score);
     const [top, ...rest] = sorted;
 
     const topLabel = sortMode === "match"

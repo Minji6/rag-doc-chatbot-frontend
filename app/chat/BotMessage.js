@@ -82,7 +82,8 @@ function BotMessage({ content, category = [], inquiry_type = [], policies = [], 
     const hasPolicyBlocks = /^### /m.test(cleanContent);
 
     // 추천: 구조화된 policies가 있을 때만 랭킹 뷰. 없으면 기존 분기로 fallback.
-    const isRecommendation = types.includes("정책추천") && policies.length > 0;
+    // 백엔드 inquiry_type 실제 값은 "추천"(INQUIRY_TYPES 상수 기준) — "정책추천"이 아님에 주의.
+    const isRecommendation = types.includes("추천") && policies.length > 0;
 
     // ── 추천 전용 레이아웃: 말풍선(도입부) + 랭킹 결과 블록 ────────────
     if (isRecommendation) {

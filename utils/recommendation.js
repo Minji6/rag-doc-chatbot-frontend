@@ -1,18 +1,23 @@
 /**
- * 정책추천 의도 전용 표현 유틸.
+ * 정책추천(추천) 의도 전용 표현 유틸.
  *
- * 백엔드는 추천 순서(policies 배열 순서)만 주고 매칭 점수를 주지 않는다.
- * 점수는 순위에서 파생하는 표현용 값이며, 정렬/필터의 근거로 쓰면 안 된다.
+ * 백엔드가 추천 의도일 때 각 정책에 suitability_score(벡터 유사도 기반 0~100 적합도)를
+ * 실어 보낸다(welfare/housing/education/employment search node 공통).
+ * 단, 검색 결과가 부족해 웹 검색으로 보완된 정책 등은 벡터 점수가 없을 수 있어
+ * 그 경우에만 추천 순서 기반 근사치로 폴백한다.
  */
 import { getDdayInfo, getDdayNumber } from "@/utils/policy";
 
 /**
- * 순위(0-based) → 매칭 점수. 1위 95점에서 시작해 순위마다 완만히 감소.
- * 백엔드 점수가 생기면 이 함수만 교체하면 된다.
+ * 정책의 매칭 점수. policy.suitability_score(백엔드 적합도)가 있으면 그대로 쓰고,
+ * 없으면(웹 검색 보완 등) 추천 순서(rankIndex, 0-based) 기반 근사치로 폴백한다.
  */
-export function getMatchScore(rankIndex) {
-    if (rankIndex === 0) return 95;
-    return Math.max(55, 94 - rankIndex * 6);
+export function getMatchScore(policy, rankIndex = 0) {
+    const score = policy?.suitability_score;
+    if (typeof score === "number" && !Number.isNaN(score)) {
+        return Math.round(Math.max(0, Math.min(100, score)));
+    }
+    return rankIndex === 0 ? 95 : Math.max(55, 94 - rankIndex * 6);
 }
 
 // 금액 하이라이트 추출용 — "월 40만원", "최대 30만원", "연 13만원" 등
@@ -59,10 +64,16 @@ export function getShortBenefit(policy, maxLength = 22) {
  * ranked 아이템({ policy, score }) 배열을 받아 새 배열을 반환한다(원본 불변).
  */
 export function sortByDeadline(ranked) {
+    // getDdayNumber는 aplyPrdSeCd가 "상시"·"마감" 둘 다 null을 반환해 구분이 안 되므로
+    // (utils/policy.js의 getDeadlineDate가 두 값 모두 단락 처리),
+    // 리터럴 상태값을 먼저 보고 날짜 기반 계산은 그 외(기간 지정)에만 쓴다.
     const key = ({ policy }) => {
+        const status = (policy?.aplyPrdSeCd || "").trim();
+        if (status === "마감") return [2, 0];    // 마감됨 — 맨 뒤
+        if (status === "상시") return [1, 0];    // 상시 — 마감 있는 정책 뒤
         const days = getDdayNumber(policy);
-        if (days === null) return [1, 0];        // 상시 — 마감 있는 정책 뒤
-        if (days < 0) return [2, -days];         // 마감됨 — 맨 뒤, 오래된 순
+        if (days === null) return [1, 0];        // 알 수 없음 — 상시와 동일 취급
+        if (days < 0) return [2, -days];         // 날짜상 지남 — 맨 뒤, 오래된 순
         return [0, days];                        // 임박한 순
     };
     return [...ranked].sort((a, b) => {
