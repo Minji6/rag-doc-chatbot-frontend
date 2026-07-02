@@ -111,20 +111,13 @@ export function getUrgencyLevel(policy) {
 /**
  * 자격 검증(policy.eligibility) 표시용 매핑 — 상세 모달의 '자격 검증' 섹션 단일 출처.
  * 백엔드 build_eligibility_report의 status/items[].status 값과 1:1로 대응한다.
+ * 아이콘은 emoji 대신 StatusIcons 컴포넌트(CheckCircleIcon 등)를 tone으로 골라 쓴다.
  */
-// 전체 신청 가능 여부 배지 (🟢 가능 / 🟡 확인 불가 / 🔴 대상 아님)
 // partial은 백엔드에서 "미충족은 없으나 정보 부족(unknown) 조건이 있는" 경우만 반환한다.
 export const ELIGIBILITY_STATUS = {
-    eligible:   { icon: "🟢", label: "신청 가능",                  tone: "eligible" },
-    partial:    { icon: "🟡", label: "일부 조건을 확인할 수 없습니다", tone: "partial" },
-    ineligible: { icon: "🔴", label: "신청 대상이 아닙니다",         tone: "ineligible" },
-};
-
-// 조건별 상태 아이콘 (✅ 충족 / ❌ 미충족 / ⚠️ 확인 불가)
-export const CONDITION_STATUS_ICON = {
-    met: "✅",
-    unmet: "❌",
-    unknown: "⚠️",
+    eligible:   { label: "신청 대상이에요",       tone: "eligible" },
+    partial:    { label: "일부 조건을 확인할 수 없어요", tone: "partial" },
+    ineligible: { label: "신청 대상이 아니에요",   tone: "ineligible" },
 };
 
 /**
