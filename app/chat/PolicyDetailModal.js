@@ -135,8 +135,8 @@ function PolicyDetailModal({ policy, onClose }) {
                                 <div className="policy-eligibility-block">
                                     <div className="policy-eligibility-subheading">조건별 검증 결과</div>
                                     <ul className="policy-eligibility-list">
-                                        {eligibility.items.map((item) => (
-                                            <li key={item.label} className="policy-eligibility-item">
+                                        {eligibility.items.map((item, index) => (
+                                            <li key={item.label ?? index} className="policy-eligibility-item">
                                                 <span className="policy-eligibility-item-icon">
                                                     {CONDITION_STATUS_ICON[item.status] ?? "⚠️"}
                                                 </span>
