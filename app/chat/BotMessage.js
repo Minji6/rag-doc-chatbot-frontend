@@ -7,13 +7,57 @@ import remarkGfm from "remark-gfm";
 
 import { useAuth } from "@/contexts/AuthContext";
 import { CATEGORY_STYLE } from "@/utils/policy";
+import { parseMarkdownPolicies } from "@/utils/parseMarkdownPolicies";
 import PolicyResultList from "@/app/chat/PolicyResultList";
 import PolicyTextCards from "@/app/chat/PolicyTextCards";
 import PolicyDetailModal from "@/app/chat/PolicyDetailModal";
+import PolicyRecommendation from "@/app/chat/recommendation/PolicyRecommendation";
 
 // LLM이 본문 뒤에 suggestions를 덧붙였을 때 제거.
 function stripEmbeddedSuggestions(text) {
     return (text ?? "").replace(/---SUGGESTIONS---[\s\S]*$/m, "").trimEnd();
+}
+
+/** 분석 완료 · 분야 · 의도 배지 행 */
+function AnalysisBadges({ category, types }) {
+    return (
+        <div className="analysis-badge-row">
+            <span className="analysis-badge complete">+ 분석 완료</span>
+            {category.map(cat => {
+                const style = CATEGORY_STYLE[cat];
+                return (
+                    <span
+                        key={cat}
+                        className="analysis-badge category"
+                        style={style ? { color: style.color, background: style.bg, borderColor: "transparent" } : {}}
+                    >
+                        분야 {cat}
+                    </span>
+                );
+            })}
+            {types.length > 0 && (
+                <span className="analysis-badge intent">의도 {types.join(", ")}</span>
+            )}
+        </div>
+    );
+}
+
+/** 후속 질문 제안 칩 */
+function SuggestionChips({ suggestions, onSelectQuestion }) {
+    if (!suggestions.length) return null;
+    return (
+        <div className="suggestions-row">
+            {suggestions.map((q, i) => (
+                <button
+                    key={i}
+                    className="suggestion-chip"
+                    onClick={() => onSelectQuestion?.(q)}
+                >
+                    {q}
+                </button>
+            ))}
+        </div>
+    );
 }
 
 function BotMessage({ content, category = [], inquiry_type = [], policies = [], suggestions = [], onSelectQuestion }) {
@@ -36,9 +80,57 @@ function BotMessage({ content, category = [], inquiry_type = [], policies = [], 
     // 주의: "### " 헤더에만 의존하므로 LLM이 포맷을 바꾸면 false가 되어
     //       카드 대신 아래 showPlainText(ReactMarkdown)로 자연스럽게 fallback된다.
     const hasPolicyBlocks = /^### /m.test(cleanContent);
+
+    // 추천: 구조화된 policies가 있을 때만 랭킹 뷰. 없으면 기존 분기로 fallback.
+    const isRecommendation = types.includes("정책추천") && policies.length > 0;
+
+    // ── 추천 전용 레이아웃: 말풍선(도입부) + 랭킹 결과 블록 ────────────
+    if (isRecommendation) {
+        // 말풍선에는 도입 멘트만 남긴다. ### 정책 블록 상세는 랭킹 카드가 대신한다.
+        const intro = hasPolicyBlocks
+            ? parseMarkdownPolicies(cleanContent).intro
+            : cleanContent;
+
+        return (
+            <div className="message-row bot">
+                <div className="avatar bot">
+                    <Image
+                        src="/cheongpodo-bot.png"
+                        alt="청포도"
+                        width={38}
+                        height={38}
+                        className="avatar bot"
+                    />
+                </div>
+                <div className="message-col">
+                    {(hasAnalysis || intro || suggestions.length > 0) && (
+                        <div className="message-bubble bot">
+                            {hasAnalysis && <AnalysisBadges category={category} types={types} />}
+                            {intro && (
+                                <ReactMarkdown remarkPlugins={[remarkGfm]}>{intro}</ReactMarkdown>
+                            )}
+                            <SuggestionChips suggestions={suggestions} onSelectQuestion={onSelectQuestion} />
+                        </div>
+                    )}
+                    <PolicyRecommendation
+                        policies={policies}
+                        onSelectPolicy={currentUser ? setSelectedPolicy : undefined}
+                    />
+                </div>
+
+                {selectedPolicy && (
+                    <PolicyDetailModal
+                        policy={selectedPolicy}
+                        onClose={() => setSelectedPolicy(null)}
+                    />
+                )}
+            </div>
+        );
+    }
+
     const showTextCards = !isDetailOnly && !isCompareOnly && hasPolicyBlocks;
 
-    // 그 외 일반 텍스트 (추천·비교·일반대화)
+    // 그 외 일반 텍스트 (비교·일반대화)
     const showPlainText = !isDetailOnly && !showTextCards;
 
     return (
@@ -53,26 +145,7 @@ function BotMessage({ content, category = [], inquiry_type = [], policies = [], 
                 />
             </div>
             <div className="message-bubble bot">
-                {hasAnalysis && (
-                    <div className="analysis-badge-row">
-                        <span className="analysis-badge complete">+ 분석 완료</span>
-                        {category.map(cat => {
-                            const style = CATEGORY_STYLE[cat];
-                            return (
-                                <span
-                                    key={cat}
-                                    className="analysis-badge category"
-                                    style={style ? { color: style.color, background: style.bg, borderColor: "transparent" } : {}}
-                                >
-                                    분야 {cat}
-                                </span>
-                            );
-                        })}
-                        {types.length > 0 && (
-                            <span className="analysis-badge intent">의도 {types.join(", ")}</span>
-                        )}
-                    </div>
-                )}
+                {hasAnalysis && <AnalysisBadges category={category} types={types} />}
 
                 {/* 상세조회: 카드 위 안내 멘트(composer 메시지, 있으면) + 구조화 데이터 카드 */}
                 {isDetailOnly && (
@@ -92,24 +165,12 @@ function BotMessage({ content, category = [], inquiry_type = [], policies = [], 
                     <PolicyTextCards content={cleanContent} policies={policies} category={category} />
                 )}
 
-                {/* 추천·비교·일반대화: 마크다운 그대로 */}
+                {/* 비교·일반대화: 마크다운 그대로 */}
                 {showPlainText && (
                     <ReactMarkdown remarkPlugins={[remarkGfm]}>{cleanContent}</ReactMarkdown>
                 )}
 
-                {suggestions.length > 0 && (
-                    <div className="suggestions-row">
-                        {suggestions.map((q, i) => (
-                            <button
-                                key={i}
-                                className="suggestion-chip"
-                                onClick={() => onSelectQuestion?.(q)}
-                            >
-                                {q}
-                            </button>
-                        ))}
-                    </div>
-                )}
+                <SuggestionChips suggestions={suggestions} onSelectQuestion={onSelectQuestion} />
             </div>
 
             {selectedPolicy && (

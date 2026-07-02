@@ -541,6 +541,240 @@ body {
 }
 
 /* ============================================================
+   PolicyRecommendation (정책추천 의도 랭킹 뷰)
+   ============================================================ */
+
+/* 말풍선 + 추천 블록을 세로로 쌓는 컬럼 (message-row 내부) */
+.message-col {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.reco-block {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ── 헤더: 건수 + 정렬 토글 ── */
+.reco-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.reco-count {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.reco-sort {
+  display: flex;
+  gap: 8px;
+}
+
+.reco-sort-btn {
+  padding: 7px 16px;
+  border-radius: 22px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.reco-sort-btn:hover {
+  background: var(--surface-sub);
+}
+
+.reco-sort-btn.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--primary-text);
+}
+
+/* ── 1순위 하이라이트 카드 ── */
+.reco-top-card {
+  background: linear-gradient(135deg, var(--surface) 55%, var(--primary-light));
+  border: 1.5px solid var(--primary);
+  border-radius: 18px;
+  padding: 18px 24px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.reco-top-card.clickable {
+  cursor: pointer;
+  transition: box-shadow 0.15s;
+}
+
+.reco-top-card.clickable:hover {
+  box-shadow: 0 4px 14px var(--shadow-logo);
+}
+
+.reco-top-label {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 14px;
+  border-radius: 20px;
+  background: var(--primary);
+  color: var(--primary-text);
+  font-size: 12.5px;
+  font-weight: 700;
+}
+
+.reco-top-body {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+
+.reco-top-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.reco-top-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.reco-top-dday {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.reco-top-title {
+  font-size: 19px;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.3;
+}
+
+.reco-top-summary {
+  font-size: 14px;
+  color: var(--text);
+  opacity: 0.85;
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.reco-top-benefit {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--primary);
+}
+
+/* ── 2순위 이하 목록 ── */
+.reco-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.reco-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 13px 18px;
+  font-family: inherit;
+  text-align: left;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.reco-row:hover {
+  border-color: var(--primary);
+  box-shadow: 0 2px 8px var(--shadow-logo);
+}
+
+.reco-row.static {
+  cursor: default;
+}
+
+.reco-row.static:hover {
+  border-color: var(--border);
+  box-shadow: none;
+}
+
+.reco-row-rank {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--surface-sub);
+  color: var(--text-muted);
+  font-size: 12.5px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.reco-row-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.reco-row-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.3;
+}
+
+.reco-row-meta {
+  font-size: 13px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.reco-row-chevron {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+/* 매칭 게이지 */
+.match-ring {
+  flex-shrink: 0;
+}
+
+.match-ring-score {
+  font-weight: 800;
+  fill: var(--text);
+}
+
+/* ============================================================
    PolicyDetailModal (로그인 유저 상세 모달)
    ============================================================ */
 .policy-detail-modal {
@@ -1558,6 +1792,15 @@ body {
   }
 
   .policy-card-list { max-width: 100%; }
+
+  /* 추천 랭킹 뷰: 좁은 화면에서는 게이지·정보가 세로로 쌓인다 */
+  .reco-top-body {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+  .reco-top-card { padding: 16px 18px 18px; }
+  .reco-row { padding: 12px 14px; gap: 10px; }
 }
 
 @media (max-width: 480px) {
