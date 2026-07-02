@@ -604,6 +604,7 @@ body {
   border: 1px solid var(--border);
   border-radius: 10px;
   overflow: hidden;
+  flex-shrink: 0;  /* 세로 flex(body)에서 압축돼 값이 잘리지 않게 */
 }
 
 .policy-detail-meta-item {
@@ -809,6 +810,8 @@ body {
 
 .policy-eligibility-item-label {
   font-weight: 700;
+  flex-shrink: 0;       /* 라벨이 줄어들지 않게 */
+  white-space: nowrap;  /* "지역" 등이 글자 단위로 세로 분해되지 않게 */
 }
 
 .policy-eligibility-item-detail {
