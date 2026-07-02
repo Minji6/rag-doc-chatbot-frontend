@@ -604,6 +604,7 @@ body {
   border: 1px solid var(--border);
   border-radius: 10px;
   overflow: hidden;
+  flex-shrink: 0;  /* 세로 flex(body)에서 압축돼 값이 잘리지 않게 */
 }
 
 .policy-detail-meta-item {
@@ -703,6 +704,127 @@ body {
   background: var(--border);
   color: var(--text-muted);
   cursor: not-allowed;
+}
+
+/* ============================================================
+   PolicyDetailModal — 자격 검증 섹션
+   ============================================================ */
+.policy-eligibility {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.policy-eligibility-divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 4px 0 2px;
+}
+
+.policy-eligibility-heading {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.policy-eligibility-verdict {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+
+.policy-eligibility-verdict-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.policy-eligibility-verdict-badge {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+/* 상태 톤 — 기존 디자인 토큰 재활용 (초록/주황/빨강 + 옅은 배경) */
+.policy-eligibility-verdict.tone-eligible {
+  background: #5AA82C1A;
+  border-color: #5AA82C55;
+}
+.policy-eligibility-verdict.tone-eligible .policy-eligibility-verdict-badge {
+  color: var(--primary);
+}
+
+.policy-eligibility-verdict.tone-partial {
+  background: #F59E3C1A;
+  border-color: #F59E3C55;
+}
+.policy-eligibility-verdict.tone-partial .policy-eligibility-verdict-badge {
+  color: #F59E3C;
+}
+
+.policy-eligibility-verdict.tone-ineligible {
+  background: #E5484D1A;
+  border-color: #E5484D55;
+}
+.policy-eligibility-verdict.tone-ineligible .policy-eligibility-verdict-badge {
+  color: var(--dday-urgent);
+}
+
+.policy-eligibility-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.policy-eligibility-subheading {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.policy-eligibility-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+}
+
+.policy-eligibility-item {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--text);
+}
+
+.policy-eligibility-item-icon {
+  flex-shrink: 0;
+}
+
+.policy-eligibility-item-label {
+  font-weight: 700;
+  flex-shrink: 0;       /* 라벨이 줄어들지 않게 */
+  white-space: nowrap;  /* "지역" 등이 글자 단위로 세로 분해되지 않게 */
+}
+
+.policy-eligibility-item-detail {
+  color: var(--text-muted);
+}
+
+.policy-eligibility-summary {
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--text);
+  background: var(--surface-sub);
+  border-radius: 10px;
+  padding: 10px 12px;
 }
 
 /* ============================================================
