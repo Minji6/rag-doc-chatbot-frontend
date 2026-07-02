@@ -107,3 +107,16 @@ export function getUrgencyLevel(policy) {
     if (days <= 21) return "soon";
     return "relaxed";
 }
+
+/**
+ * 정책 본문 텍스트에서 줄 앞 불릿 기호(○ ※ * · • - )만 제거한다.
+ * 괄호 섹션명(목적), (주요 내용) 등은 맥락 유지를 위해 그대로 둔다.
+ * 인라인 특수문자(예: '마이스터대*')는 줄 시작이 아니므로 건드리지 않는다.
+ */
+export function cleanPolicyText(text) {
+    if (!text) return text;
+    return text
+        .split("\n")
+        .map(line => line.replace(/^[○※*·•]\s*|^-\s+/, ""))
+        .join("\n");
+}
