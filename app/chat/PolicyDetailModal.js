@@ -6,6 +6,7 @@ import {
     getDdayInfo,
     getUrgencyLevel,
     formatApplyPeriod,
+    cleanPolicyText,
     ELIGIBILITY_STATUS,
     CONDITION_STATUS_ICON,
 } from "@/utils/policy";
@@ -54,14 +55,18 @@ function PolicyDetailModal({ policy, onClose }) {
     const applyPeriod = formatApplyPeriod(policy);
     const url = aplyUrlAddr?.trim();
 
-    // (라벨, 값) 쌍 — 값이 있는 항목만 정의 리스트로 렌더한다.
-    const fields = [
-        ["지원 내용", plcySprtCn],
-        ["정책 설명", plcyExplnCn],
-        ["지원 대상", ptcpPrpTrgtCn],
-        ["추가 자격 조건", addAplyQlfcCndCn],
+    // 짧은 메타 정보 — 카드 field-row처럼 나란히 표시
+    const metaFields = [
         ["신청 기간", applyPeriod],
         ["세부 분야", sub_category],
+    ].filter(([, value]) => value && String(value).trim());
+
+    // 긴 텍스트 — 라벨 + 박스 형태로 섹션 구분. 불릿 기호 제거 후 표시.
+    const contentFields = [
+        ["지원 내용", cleanPolicyText(plcySprtCn)],
+        ["정책 설명", cleanPolicyText(plcyExplnCn)],
+        ["지원 대상", cleanPolicyText(ptcpPrpTrgtCn)],
+        ["추가 자격 조건", cleanPolicyText(addAplyQlfcCndCn)],
     ].filter(([, value]) => value && String(value).trim());
 
     // 모달은 body로 포털링한다. 메시지 말풍선(.message-row.bot) 같은 flex/transform
@@ -95,8 +100,18 @@ function PolicyDetailModal({ policy, onClose }) {
                     )}
                 </div>
 
-                <div className="policy-detail-body">
-                    {fields.map(([label, value]) => (
+                <div className="policy-detail-body" style={{ "--accent": style.color, "--accent-bg": style.bg }}>
+                    {metaFields.length > 0 && (
+                        <div className="policy-detail-meta">
+                            {metaFields.map(([label, value]) => (
+                                <div key={label} className="policy-detail-meta-item">
+                                    <div className="policy-detail-meta-label">{label}</div>
+                                    <div className="policy-detail-meta-value">{value}</div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                    {contentFields.map(([label, value]) => (
                         <div key={label} className="policy-detail-field">
                             <div className="policy-detail-label">{label}</div>
                             <p className="policy-detail-value">{value}</p>

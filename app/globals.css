@@ -586,27 +586,68 @@ body {
 }
 
 .policy-detail-body {
-  padding: 20px 24px;
+  padding: 16px 20px 20px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
 }
 
 .policy-detail-body::-webkit-scrollbar { width: 4px; }
 .policy-detail-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 
-.policy-detail-label {
-  font-size: 12px;
+/* 짧은 메타 필드 (신청 기간·세부 분야) — 카드 field-row 패턴으로 나란히 */
+.policy-detail-meta {
+  display: flex;
+  gap: 0;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.policy-detail-meta-item {
+  flex: 1;
+  padding: 10px 14px;
+}
+
+.policy-detail-meta-item + .policy-detail-meta-item {
+  border-left: 1px solid var(--border);
+}
+
+.policy-detail-meta-label {
+  font-size: 10.5px;
   font-weight: 700;
   color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
   margin-bottom: 4px;
 }
 
-.policy-detail-value {
-  font-size: 14px;
+.policy-detail-meta-value {
+  font-size: 13px;
+  font-weight: 600;
   color: var(--text);
-  line-height: 1.65;
+  line-height: 1.4;
+}
+
+/* 긴 텍스트 섹션 라벨 — 하이라이터 효과 */
+.policy-detail-label {
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  background: linear-gradient(transparent 30%, var(--accent-bg, var(--primary-light)) 30%);
+  padding: 0 3px;
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+
+/* 긴 텍스트 값 — 배경 없이 깔끔하게 */
+.policy-detail-value {
+  font-size: 13.5px;
+  color: var(--text);
+  line-height: 1.75;
   white-space: pre-line;
 }
 
