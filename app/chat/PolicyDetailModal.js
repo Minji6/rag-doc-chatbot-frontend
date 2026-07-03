@@ -8,8 +8,8 @@ import {
     formatApplyPeriod,
     cleanPolicyText,
     ELIGIBILITY_STATUS,
-    CONDITION_STATUS_ICON,
 } from "@/utils/policy";
+import { CONDITION_STATUS_ICON_COMPONENT } from "@/app/components/StatusIcons";
 
 // D-Day 텍스트 색상 — 마감임박 빨강 / 진행중 주황 / 마감됨·상시 회색
 function ddayTextColor(urgencyLevel, muted) {
@@ -48,6 +48,11 @@ function PolicyDetailModal({ policy, onClose }) {
 
     // 자격 검증 배지 정보 (status가 매핑에 없으면 섹션을 렌더하지 않음)
     const eligibilityStatus = eligibility && ELIGIBILITY_STATUS[eligibility.status];
+    const VerdictIcon = eligibilityStatus && (
+        eligibilityStatus.tone === "eligible" ? CONDITION_STATUS_ICON_COMPONENT.met
+            : eligibilityStatus.tone === "ineligible" ? CONDITION_STATUS_ICON_COMPONENT.unmet
+                : CONDITION_STATUS_ICON_COMPONENT.unknown
+    );
 
     const style = categoryStyle(category);
     const dday = getDdayInfo(policy);
@@ -125,36 +130,37 @@ function PolicyDetailModal({ policy, onClose }) {
                             <h4 className="policy-eligibility-heading">자격 검증</h4>
 
                             <div className={`policy-eligibility-verdict tone-${eligibilityStatus.tone}`}>
-                                <span className="policy-eligibility-verdict-label">신청 가능 여부</span>
-                                <span className="policy-eligibility-verdict-badge">
-                                    {eligibilityStatus.icon} {eligibilityStatus.label}
+                                <span className="policy-eligibility-verdict-icon">
+                                    <VerdictIcon size={32} />
                                 </span>
+                                <div className="policy-eligibility-verdict-text">
+                                    <div className="policy-eligibility-verdict-title">{eligibilityStatus.label}</div>
+                                    {eligibility.summary && (
+                                        <div className="policy-eligibility-verdict-subtitle">{eligibility.summary}</div>
+                                    )}
+                                </div>
                             </div>
 
                             {eligibility.items?.length > 0 && (
-                                <div className="policy-eligibility-block">
-                                    <div className="policy-eligibility-subheading">조건별 검증 결과</div>
-                                    <ul className="policy-eligibility-list">
-                                        {eligibility.items.map((item, index) => (
-                                            <li key={item.label ?? index} className="policy-eligibility-item">
+                                <ul className="policy-eligibility-list">
+                                    {eligibility.items.map((item, index) => {
+                                        const ItemIcon = CONDITION_STATUS_ICON_COMPONENT[item.status] ?? CONDITION_STATUS_ICON_COMPONENT.unknown;
+                                        return (
+                                            <li key={item.label ?? index} className={`policy-eligibility-item status-${item.status}`}>
                                                 <span className="policy-eligibility-item-icon">
-                                                    {CONDITION_STATUS_ICON[item.status] ?? "⚠️"}
+                                                    <ItemIcon size={20} />
                                                 </span>
-                                                <span className="policy-eligibility-item-label">{item.label}</span>
-                                                <span className="policy-eligibility-item-detail">
-                                                    (요건: {item.requirement} / 사용자: {item.userValue})
-                                                </span>
+                                                <div className="policy-eligibility-item-body">
+                                                    <div className="policy-eligibility-item-top">
+                                                        <span className="policy-eligibility-item-label">{item.label}</span>
+                                                        <span className="policy-eligibility-item-requirement">요건 {item.requirement}</span>
+                                                    </div>
+                                                    <div className="policy-eligibility-item-value">내 정보 {item.userValue}</div>
+                                                </div>
                                             </li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            )}
-
-                            {eligibility.summary && (
-                                <div className="policy-eligibility-block">
-                                    <div className="policy-eligibility-subheading">종합 결과</div>
-                                    <p className="policy-eligibility-summary">{eligibility.summary}</p>
-                                </div>
+                                        );
+                                    })}
+                                </ul>
                             )}
                         </div>
                     )}
