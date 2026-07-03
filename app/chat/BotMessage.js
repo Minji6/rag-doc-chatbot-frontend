@@ -115,16 +115,9 @@ function BotMessage({ content, category = [], inquiry_type = [], policies = [], 
                     )}
                     <PolicyRecommendation
                         policies={policies}
-                        onSelectPolicy={currentUser ? setSelectedPolicy : undefined}
+                        onSelectPolicy={(policy) => onSelectQuestion?.(`${policy.plcyNm}에 대해 자세히 알려줘`)}
                     />
                 </div>
-
-                {selectedPolicy && (
-                    <PolicyDetailModal
-                        policy={selectedPolicy}
-                        onClose={() => setSelectedPolicy(null)}
-                    />
-                )}
             </div>
         );
     }

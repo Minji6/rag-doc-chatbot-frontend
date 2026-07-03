@@ -557,6 +557,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  max-width: 75%;
 }
 
 /* ── 헤더: 건수 + 정렬 토글 ── */
@@ -1768,6 +1769,7 @@ body {
 
   .message-bubble { max-width: 85%; }
   .message-bubble.bot { max-width: 90%; }
+  .reco-block { max-width: 90%; }
 
   .chat-header { padding: 12px 16px; }
 
