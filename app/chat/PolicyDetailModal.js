@@ -1,7 +1,15 @@
 "use client"
 
 import { createPortal } from "react-dom";
-import { categoryStyle, getDdayInfo, getUrgencyLevel, formatApplyPeriod, cleanPolicyText } from "@/utils/policy";
+import {
+    categoryStyle,
+    getDdayInfo,
+    getUrgencyLevel,
+    formatApplyPeriod,
+    cleanPolicyText,
+    ELIGIBILITY_STATUS,
+} from "@/utils/policy";
+import { CONDITION_STATUS_ICON_COMPONENT } from "@/app/components/StatusIcons";
 
 // D-Day 텍스트 색상 — 마감임박 빨강 / 진행중 주황 / 마감됨·상시 회색
 function ddayTextColor(urgencyLevel, muted) {
@@ -35,7 +43,16 @@ function PolicyDetailModal({ policy, onClose }) {
         ptcpPrpTrgtCn,    // 지원 대상
         addAplyQlfcCndCn, // 추가 신청 자격 조건
         aplyUrlAddr,      // 신청 URL
+        eligibility,      // 자격 검증 결과 (상세조회 로그인 유저에게만 존재)
     } = policy;
+
+    // 자격 검증 배지 정보 (status가 매핑에 없으면 섹션을 렌더하지 않음)
+    const eligibilityStatus = eligibility && ELIGIBILITY_STATUS[eligibility.status];
+    const VerdictIcon = eligibilityStatus && (
+        eligibilityStatus.tone === "eligible" ? CONDITION_STATUS_ICON_COMPONENT.met
+            : eligibilityStatus.tone === "ineligible" ? CONDITION_STATUS_ICON_COMPONENT.unmet
+                : CONDITION_STATUS_ICON_COMPONENT.unknown
+    );
 
     const style = categoryStyle(category);
     const dday = getDdayInfo(policy);
@@ -105,6 +122,48 @@ function PolicyDetailModal({ policy, onClose }) {
                             <p className="policy-detail-value">{value}</p>
                         </div>
                     ))}
+
+                    {/* 자격 검증 — 정책 상세 하단에 Divider로 구분해 별도 섹션으로 표시 */}
+                    {eligibilityStatus && (
+                        <div className="policy-eligibility">
+                            <hr className="policy-eligibility-divider" />
+                            <h4 className="policy-eligibility-heading">자격 검증</h4>
+
+                            <div className={`policy-eligibility-verdict tone-${eligibilityStatus.tone}`}>
+                                <span className="policy-eligibility-verdict-icon">
+                                    <VerdictIcon size={32} />
+                                </span>
+                                <div className="policy-eligibility-verdict-text">
+                                    <div className="policy-eligibility-verdict-title">{eligibilityStatus.label}</div>
+                                    {eligibility.summary && (
+                                        <div className="policy-eligibility-verdict-subtitle">{eligibility.summary}</div>
+                                    )}
+                                </div>
+                            </div>
+
+                            {eligibility.items?.length > 0 && (
+                                <ul className="policy-eligibility-list">
+                                    {eligibility.items.map((item, index) => {
+                                        const ItemIcon = CONDITION_STATUS_ICON_COMPONENT[item.status] ?? CONDITION_STATUS_ICON_COMPONENT.unknown;
+                                        return (
+                                            <li key={item.label ?? index} className={`policy-eligibility-item status-${item.status}`}>
+                                                <span className="policy-eligibility-item-icon">
+                                                    <ItemIcon size={20} />
+                                                </span>
+                                                <div className="policy-eligibility-item-body">
+                                                    <div className="policy-eligibility-item-top">
+                                                        <span className="policy-eligibility-item-label">{item.label}</span>
+                                                        <span className="policy-eligibility-item-requirement">요건 {item.requirement}</span>
+                                                    </div>
+                                                    <div className="policy-eligibility-item-value">내 정보 {item.userValue}</div>
+                                                </div>
+                                            </li>
+                                        );
+                                    })}
+                                </ul>
+                            )}
+                        </div>
+                    )}
                 </div>
 
                 <div className="policy-detail-footer">
