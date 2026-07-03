@@ -83,7 +83,9 @@ function BotMessage({ content, category = [], inquiry_type = [], policies = [], 
 
     // 추천: 구조화된 policies가 있을 때만 랭킹 뷰. 없으면 기존 분기로 fallback.
     // 백엔드 inquiry_type 실제 값은 "추천"(INQUIRY_TYPES 상수 기준) — "정책추천"이 아님에 주의.
-    const isRecommendation = types.includes("추천") && policies.length > 0;
+    // 추천 단독일 때만 랭킹 뷰를 쓴다 — ["추천","비교"] 같은 복합 의도면 비교 표(showTextCards
+    // 이하 분기)가 담당해야 하는데, includes만 보면 비교 의도가 무시되고 랭킹 뷰가 가로챈다.
+    const isRecommendation = types.length === 1 && types.includes("추천") && policies.length > 0;
 
     // ── 추천 전용 레이아웃: 말풍선(도입부) + 랭킹 결과 블록 ────────────
     if (isRecommendation) {
