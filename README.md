@@ -1,10 +1,6 @@
-# 📚 청년정책지원 챗봇 — Frontend
+# <img src="public/cheongpodo.png" width="28" valign="middle" alt="청포도 챗봇 로고"/> 청년정책지원 챗봇 — Frontend
 
 주거·일자리·교육·복지문화 분야 청년 정책을 대화형으로 검색·추천받는 청년정책 AI 챗봇 프론트엔드
-
-<p align="center">
-  <img src="public/cheongpodo.png" width="200" alt="청포도 챗봇 로고"/>
-</p>
 
 ---
 
